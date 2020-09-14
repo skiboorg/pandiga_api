@@ -5,8 +5,12 @@ from django.db import IntegrityError, transaction
 from rest_framework import exceptions, serializers
 from djoser.conf import settings
 from city.serializers import CitySerializer
+from .models import UserFeedback
 
 User = get_user_model()
+
+
+
 
 class UserSerializer(serializers.ModelSerializer):
     fullname = serializers.CharField(source='get_full_name',read_only=True,required=False)
@@ -34,6 +38,7 @@ class UserSerializer(serializers.ModelSerializer):
             'subscribe_type',
             'orders_count',
             'rent_count',
+            'date_joined'
 
                   ]
 
@@ -44,6 +49,16 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             return 'https://icon-icons.com/icons2/1097/PNG/96/1485477097-avatar_78580.png'
 
+class UserFeedbackSerializer(serializers.ModelSerializer):
+    author = UserSerializer(many=False,read_only=True)
+    class Meta:
+        model = UserFeedback
+        fields = [
+            'id',
+            'text',
+            'created_at',
+            'author',
+        ]
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

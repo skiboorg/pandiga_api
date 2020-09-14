@@ -42,6 +42,17 @@ class UserUpdate(APIView):
             print(serializer.errors)
             return Response(status=400)
 
+class GetUserFeedbacks(generics.ListAPIView):
+    serializer_class = UserFeedbackSerializer
+
+    def get_queryset(self):
+        queryset = UserFeedback.objects.filter(user=self.request.query_params.get('user_id'))
+        return queryset
+
+class GetUserByID(generics.RetrieveAPIView):
+    serializer_class = UserSerializer
+    queryset = User.objects.filter()
+
 class GetUser(generics.RetrieveAPIView):
     permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer

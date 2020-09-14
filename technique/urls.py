@@ -9,7 +9,7 @@ urlpatterns = [
     path('types/', views.TechniqueTypesListView.as_view()),
     path('filters/<str:name_slug>/', views.TechniqueFilterListView.as_view()),
     path('units', views.TechniqueUnitListView.as_view()),
-    path('user/units/', views.TechniqueUserUnitsListView.as_view()),
+    path('user/units', views.TechniqueUserUnitsListView.as_view()),
     path('unit/add/', views.TechniqueUnitAdd.as_view()),
 
     path('unit/<str:name_slug>', views.TechniqueUnitDetailView.as_view()),

@@ -1,5 +1,6 @@
 from functools import reduce
 
+
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework import generics
@@ -7,6 +8,7 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from notification.services import createNotification
+
 
 
 class MessagesList(generics.ListAPIView):
@@ -41,6 +43,7 @@ class ChatAdd(APIView):
         for user in chat.users.all():
             if user!= request.user:
                 createNotification('chat', user, 'Новое сообщение в чате', '/lk/chats')
+
         return Response(status=201)
 
 class ChatNewMessage(APIView):

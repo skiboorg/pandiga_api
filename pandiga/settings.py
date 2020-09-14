@@ -44,8 +44,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 
-    # "fcm_django",
-
     'user',
     'technique',
     'chat',

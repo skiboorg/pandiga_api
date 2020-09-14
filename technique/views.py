@@ -112,7 +112,7 @@ class TechniqueUserUnitsListView(generics.ListAPIView):
     """Вывод едениц техники юзера"""
     serializer_class = TechniqueUnitSerializer
     def get_queryset(self):
-        return TechniqueUnit.objects.filter(owner=self.request.user)
+        return TechniqueUnit.objects.filter(owner=self.request.query_params.get('user_id'))
 
     # def get(self,request):
     #     techique_units = TechniqueUnit.objects.filter(owner=request.user)

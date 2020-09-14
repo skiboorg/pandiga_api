@@ -5,4 +5,4 @@ djoser
 pytils
 django-ckeditor
 twilio
-fcm-django
+django-fcm
