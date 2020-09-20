@@ -27,9 +27,12 @@ class TechniqueUnitImageInline(admin.TabularInline):
     model = TechniqueUnitImage
     extra = 0
 
+class TechniqueUnitImageDocInline(admin.TabularInline):
+    model = TechniqueUnitImageDoc
+    extra = 0
 
 class TechniqueUnitAdmin(admin.ModelAdmin):
-    inlines = [TechniqueUnitImageInline]
+    inlines = [TechniqueUnitImageInline,TechniqueUnitImageDocInline]
     class Meta:
         model = TechniqueUnit
 

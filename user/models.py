@@ -39,6 +39,7 @@ class User(AbstractUser):
     #                                      on_delete=models.SET_NULL,
     #                                      related_name='own_partner_code',
     #                                      verbose_name='Персональный портнерский код')
+    refferals = models.ManyToManyField('self',related_name='refferals',blank=True)
     subscribe_type = models.ManyToManyField('technique.TechniqueType', blank=True, verbose_name='Тип техники для оповещений')
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.SET_NULL,
                              verbose_name='Местоположение')
@@ -53,7 +54,7 @@ class User(AbstractUser):
     email = models.EmailField('Эл. почта', blank=True, null=True, unique=True)
     birthday = models.DateField('День рождения', blank=True, null=True)
     partner_code = models.CharField('Партнерский код', max_length=100, blank=True, null=True, unique=True)
-    balance = models.IntegerField('Баланс', default=0)
+    balance = models.IntegerField('Баланс', default=10000)
     orders_count = models.IntegerField('Размещено заказов', default=0)
     rent_count = models.IntegerField('Взято в аренду', default=0)
     partner_balance = models.IntegerField('Партнерский баланс', default=0)
@@ -62,7 +63,9 @@ class User(AbstractUser):
     rate_value = models.IntegerField('Сумма оценок', default=0)
     vip_update = models.DateField('Дата начала тарифа', blank=True, null=True)
     vip_expire = models.DateField('Дата завершения тарифа', blank=True, null=True)
+    last_online = models.DateTimeField('Последний раз был онлайн', auto_now=True, null=True)
     is_vip = models.BooleanField('VIP?', default=False)
+    is_online = models.BooleanField('Онлайн?', default=False)
     is_customer = models.BooleanField('Заказчик?', default=True)
     is_person = models.BooleanField('Частное лицо?', default=True)
     is_verified = models.BooleanField('Акканнт подтвержден?', default=False)
@@ -70,8 +73,7 @@ class User(AbstractUser):
     is_email_verified = models.BooleanField('EMail подтвержден?', default=False)
     verify_code = models.CharField('Код подтверждения', max_length=50, blank=True, null=True)
     notification_id = models.CharField('ID для сообщений', max_length=100, blank=True, null=True, unique=True)
-
-    last_activity = models.DateTimeField(auto_now=True)
+    channel = models.CharField(max_length=255,blank=True,null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -128,6 +130,56 @@ class UserFeedback(models.Model):
             set_user_rating(self.user.id,self.value)
         super(UserFeedback, self).save(*args, **kwargs)
 
+
+class PaymentType(models.Model):
+    icon = models.ImageField('Иконка', upload_to='payment/', blank=False, null=True)
+    name = models.CharField('Название платежа', max_length=255, blank=True, null=True)
+    method = models.CharField('Метод платежа', max_length=255, blank=True, null=True)
+    is_active = models.BooleanField('Отображать?', default=True)
+
+    def __str__(self):
+        return self.name or ''
+
+    class Meta:
+        verbose_name = "Вид платежа"
+        verbose_name_plural = "Виды платежей"
+
+class PaymentObj(models.Model):
+    pay_id = models.CharField('ID платежа',max_length=255,blank=True,null=True)
+    pay_code = models.CharField('ID платежа',max_length=255,blank=True,null=True)
+    user = models.ForeignKey(User, blank=False, null=True,
+                                  on_delete=models.CASCADE,
+                                  verbose_name='Пользователь')
+    type = models.ForeignKey(PaymentType, blank=False, null=True,
+                                  on_delete=models.CASCADE,
+                                  verbose_name='Вид платежа')
+    status = models.CharField('Статус платежа', max_length=255,blank=True,null=True)
+    amount = models.IntegerField('Сумма платежа', blank=True,null=True)
+    is_payed = models.BooleanField("Оплачен?", default=False)
+    created_at = models.DateTimeField("Дата платежа", auto_now_add=True)
+
+    def __str__(self):
+        return f'Платеж от {self.created_at}. На сумму {self.amount}. Статус {self.status}'
+
+    class Meta:
+        verbose_name = "Платеж"
+        verbose_name_plural = "Платежи"
+
+class RefferalMoney(models.Model):
+    """Начисления партеров"""
+    refferal = models.ForeignKey(User,blank=True,null=True,
+                             on_delete=models.CASCADE,
+                             verbose_name='Рефферал')
+    earned = models.IntegerField('Начислено', blank=True, null=True)
+    action = models.CharField('Операция', max_length=10, blank=True,null=True, default=0)
+    created_at = models.DateTimeField("Дата начисления", auto_now_add=True)
+
+    def __str__(self):
+        return f'Начисление по коду {self.partner.code}'
+
+    class Meta:
+        verbose_name = "Начисление"
+        verbose_name_plural = "Начисления"
 
 def user_post_save(sender, instance, created, **kwargs):
     """Создание всех значений по-умолчанию для нового пользовыателя"""

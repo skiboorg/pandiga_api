@@ -26,6 +26,7 @@ class TechniqueCategorySerializer(serializers.ModelSerializer):
             'id',
             'name',
             'name_slug',
+            'price',
             'image',
             'is_show_at_index',
             'types'

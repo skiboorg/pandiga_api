@@ -56,6 +56,7 @@ class TechniqueCategory(models.Model):
     page_keywords = models.TextField('Keywords SEO', blank=True, null=True, editable=False)
     seo_text = models.TextField('СЕО текст на страницу. ', blank=True, null=True)
     views = models.IntegerField('Просмотров категории', blank=True, default=0)
+    price = models.IntegerField('Стоимость размещения', blank=False, null=True)
     is_active = models.BooleanField('Отображается на сайте?', default=True)
     is_show_at_index = models.BooleanField('Отображается на главной?', default=False)
 
@@ -145,6 +146,8 @@ class TechniqueUnit(models.Model):
 
     def save(self, *args, **kwargs):
         self.name_lower = self.name.lower()
+        if self.owner.is_vip:
+            self.is_vip = True
         if not self.name_slug:
             slug = slugify(self.name)
             testSlug = TechniqueUnit.objects.filter(name_slug=slug)

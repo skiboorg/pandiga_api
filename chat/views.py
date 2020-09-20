@@ -8,8 +8,10 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from notification.services import createNotification
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
-
+channel_layer = get_channel_layer()
 
 class MessagesList(generics.ListAPIView):
     """Вывод сообщений в чате"""
@@ -30,18 +32,23 @@ class ChatsList(generics.ListAPIView):
     """Вывод чатов"""
     serializer_class = ChatsSerializer
     def get_queryset(self):
-        chat = Chat.objects.filter(users__in=[self.request.user.id])
+        chat = Chat.objects.filter(users__in=[self.request.user.id]).order_by('-updatedAt')
         return chat
 
 class ChatAdd(APIView):
     """Добавить сообщение в чат"""
     def post(self,request, chat_id):
+        print('chat_id',chat_id)
         chat = Chat.objects.get(id=chat_id)
-        Message.objects.create(chat=chat,
+        new_message = Message.objects.create(chat=chat,
                                user=request.user,
                                message=request.data['message'])
+        message = MessageSerializer(new_message,many=False)
+        async_to_sync(channel_layer.group_send)('chat_%s' % chat.id,
+                                                {"type": "chat.message", 'message': message.data})
         for user in chat.users.all():
             if user!= request.user:
+
                 createNotification('chat', user, 'Новое сообщение в чате', '/lk/chats')
 
         return Response(status=201)
@@ -64,6 +71,7 @@ class ChatNewMessage(APIView):
         msg_to = User.objects.get(id=owner_id)
         print(msg_to)
         createNotification('chat', msg_to, 'Новое сообщение в чате', '/lk/chats')
+        async_to_sync(channel_layer.send)(msg_to.channel, {"type": "user.notify"})
         if request.data['isRentMessage']:
             if request.data['rentType'] == 'true':
                 Message.objects.create(chat=chat,

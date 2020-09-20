@@ -19,3 +19,11 @@ class NotificationGet(generics.ListAPIView):
         user = self.request.user
         notify = Notification.objects.filter(user=user,is_new=True).order_by('-created_at')
         return notify
+
+class NotificationGetAll(generics.ListAPIView):
+    serializer_class = NotificationsSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        notify = Notification.objects.filter(user=user).order_by('-created_at')
+        return notify

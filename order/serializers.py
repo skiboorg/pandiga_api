@@ -2,7 +2,7 @@ from rest_framework import exceptions, serializers
 from user.serializers import UserSerializer
 from technique.serializers import TechniqueTypeSerializer,TechniqueUnitSerializer
 from .models import *
-
+from city.serializers import CitySerializer
 
 class OrderSerializer(serializers.ModelSerializer):
     filter = serializers.SlugRelatedField(slug_field='name', many=True, read_only=True)
@@ -47,6 +47,7 @@ class OrdersSerializer(serializers.ModelSerializer):
     worker = UserSerializer(many=False)
     worker_unit = TechniqueUnitSerializer(many=False)
     apply_units = TechniqueUnitSerializer
+    city = CitySerializer(required=False, read_only=True)
     class Meta:
         model = Order
         fields = [
@@ -70,7 +71,9 @@ class OrdersSerializer(serializers.ModelSerializer):
             'apply_units',
             'views',
             'update_at',
-            'is_finished'
+            'is_finished',
+            'coords',
+            'city'
 
 
 

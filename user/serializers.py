@@ -5,12 +5,61 @@ from django.db import IntegrityError, transaction
 from rest_framework import exceptions, serializers
 from djoser.conf import settings
 from city.serializers import CitySerializer
-from .models import UserFeedback
+from .models import *
 
-User = get_user_model()
+# User = get_user_model()
+
+class PaymentsTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentType
+        fields = '__all__'
+class PaymentsSerializer(serializers.ModelSerializer):
+    type = PaymentsTypeSerializer(many=False)
+    class Meta:
+        model = PaymentObj
+        fields = [
+            'id',
+            'amount',
+            'is_payed',
+            'created_at',
+            'type',
+        ]
+
+class PaymentsTypesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentType
+        fields = '__all__'
 
 
+class UserSerializerTemp(serializers.ModelSerializer):
+    fullname = serializers.CharField(source='get_full_name', read_only=True, required=False)
+    class Meta:
+        model = User
+        fields = [
+            'id',
+            'last_login',
+            'avatar',
+            'city',
+            'first_name',
+            'last_name',
+            'phone',
+            'email',
+            'birthday',
+            'fullname',
+            'rating',
+            'is_customer',
+            'rate_times',
+            'balance',
+            'partner_balance',
+            'partner_code',
+            'subscribe_type',
+            'orders_count',
+            'rent_count',
+            'date_joined',
+            'last_online',
+            'is_online'
 
+                  ]
 
 class UserSerializer(serializers.ModelSerializer):
     fullname = serializers.CharField(source='get_full_name',read_only=True,required=False)
@@ -35,19 +84,21 @@ class UserSerializer(serializers.ModelSerializer):
             'rate_times',
             'balance',
             'partner_balance',
+            'partner_code',
             'subscribe_type',
             'orders_count',
             'rent_count',
-            'date_joined'
+            'date_joined',
+            'last_online',
+             'is_online'
 
                   ]
 
     def get_avatar(self, obj):
-        print(obj)
         if obj.avatar:
             return self.context['request'].build_absolute_uri(obj.avatar.url)
         else:
-            return 'https://icon-icons.com/icons2/1097/PNG/96/1485477097-avatar_78580.png'
+            return 'https://www.flaticon.com/svg/static/icons/svg/16/16330.svg'
 
 class UserFeedbackSerializer(serializers.ModelSerializer):
     author = UserSerializer(many=False,read_only=True)
@@ -82,7 +133,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
             settings.LOGIN_FIELD,
             User._meta.pk.name,
             "password",
-
         )
 
     def validate(self, attrs):

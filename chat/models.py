@@ -24,11 +24,17 @@ class Chat(models.Model):
         except:
             return ''
 
+    def get_last_message_user_status(self):
+        try:
+            return True if self.messages.last().user.is_online else False
+        except:
+            return False
+
     def get_last_message_user_avatar(self):
         try:
             return self.messages.last().user.avatar.url
         except:
-            return ''
+            return 'no_ava'
 
     def get_last_message_user_id(self):
         try:
