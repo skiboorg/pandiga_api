@@ -76,7 +76,7 @@ class getUserEmailbyPhone(APIView):
         if user:
             return Response({'result': True, 'email': user.email},status=200)
         else:
-            return Response(status=404)
+            return Response({'result': False},status=200)
 
 
 class sendSMS(APIView):
@@ -135,6 +135,32 @@ class UserNewPayment(APIView):
                                status='Не оплачен')
 
         return Response(payment.confirmation.confirmation_url)
+
+
+class GetRefferals(APIView):
+    def get(self, request):
+        pass
+
+class NewPartner(APIView):
+    def post(self, request):
+        print(request.data)
+        user=None
+        try:
+            user = User.objects.get(partner_code=request.data.get('code'))
+        except:
+            pass
+        if user:
+            try:
+                master = Refferals.objects.get(master=user)
+                master.slaves.add(request.user)
+            except:
+                master = Refferals.objects.create(master=user)
+                master.slaves.add(request.user)
+
+            return Response({'status':True}, status=200)
+        else:
+            return Response({'status':False},status=200)
+
 
 class UserCheckPayment(APIView):
     def post(self, request):

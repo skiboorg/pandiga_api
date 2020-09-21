@@ -71,7 +71,7 @@ class ChatNewMessage(APIView):
         msg_to = User.objects.get(id=owner_id)
         print(msg_to)
         createNotification('chat', msg_to, 'Новое сообщение в чате', '/lk/chats')
-        async_to_sync(channel_layer.send)(msg_to.channel, {"type": "user.notify"})
+        # async_to_sync(channel_layer.send)(msg_to.channel, {"type": "user.notify"})
         if request.data['isRentMessage']:
             if request.data['rentType'] == 'true':
                 Message.objects.create(chat=chat,

@@ -26,7 +26,7 @@ class UserOnline(AsyncWebsocketConsumer):
     def set_user_offline(self):
         self.user.channel = None
         self.user.is_online = False
-        self.user.save(update_fields=["is_online"])
+        self.user.save(update_fields=["is_online","channel"])
         return
 
 

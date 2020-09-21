@@ -9,6 +9,11 @@ from .models import *
 
 # User = get_user_model()
 
+class RefferalsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Refferals
+        fields = '__all__'
+
 class PaymentsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentType

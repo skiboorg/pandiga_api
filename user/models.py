@@ -39,7 +39,7 @@ class User(AbstractUser):
     #                                      on_delete=models.SET_NULL,
     #                                      related_name='own_partner_code',
     #                                      verbose_name='Персональный портнерский код')
-    refferals = models.ManyToManyField('self',related_name='refferals',blank=True)
+
     subscribe_type = models.ManyToManyField('technique.TechniqueType', blank=True, verbose_name='Тип техники для оповещений')
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.SET_NULL,
                              verbose_name='Местоположение')
@@ -164,6 +164,12 @@ class PaymentObj(models.Model):
     class Meta:
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
+
+class Refferals(models.Model):
+    master = models.ForeignKey(User,blank=True,null=True,
+                             on_delete=models.CASCADE,
+                             related_name='master_user')
+    slaves = models.ManyToManyField(User, null=True, related_name='slaves')
 
 class RefferalMoney(models.Model):
     """Начисления партеров"""

@@ -9,8 +9,10 @@ def createNotification(type,user,text,url):
         user=user,
         text=text,
         url=url)
-
-    async_to_sync(channel_layer.send)(user.channel, {"type": "user.notify",
-                                                     'event':type,
-                                                     'message':text,
-                                                     'url':url})
+    try:
+        async_to_sync(channel_layer.send)(user.channel, {"type": "user.notify",
+                                                         'event':type,
+                                                         'message':text,
+                                                         'url':url})
+    except:
+        print('user offline')
