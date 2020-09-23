@@ -6,8 +6,9 @@ from user.models import User
 class Chat(models.Model):
 
     users = models.ManyToManyField(User, blank=True,  verbose_name='Пользователи',
-                                    related_name='chatusers')
-
+                                    related_name='chatusers',db_index=True)
+    starter = models.ForeignKey(User,blank=True,null=True,on_delete=models.CASCADE,related_name='starter')
+    opponent = models.ForeignKey(User,blank=True,null=True,on_delete=models.CASCADE,related_name='opponent')
     # techniqueitem = models.ForeignKey(TechniqueItem, blank=True, null=True, on_delete=models.CASCADE,
     #                                   verbose_name='Тема чата техника')
     # order = models.ForeignKey(TechniqueOrder, blank=True, null=True, on_delete=models.CASCADE,
@@ -51,7 +52,7 @@ class Chat(models.Model):
 
 class Message(models.Model):
     chat = models.ForeignKey(Chat, blank=False, null=True, on_delete=models.CASCADE, verbose_name='В чате',
-                             related_name='messages')
+                             related_name='messages',db_index=True)
     user = models.ForeignKey(User, blank=False, null=True, on_delete=models.CASCADE, verbose_name='Сообщение от')
     message = models.TextField('Сообщение', blank=True,null=True)
     isUnread = models.BooleanField('Не прочитанное сообщение', default=True)

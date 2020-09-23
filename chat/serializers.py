@@ -3,8 +3,25 @@ from djoser.conf import settings
 from .models import *
 from user.serializers import UserSerializer,UserSerializerTemp
 from technique.serializers import TechniqueUnitSerializer
-class ChatsSerializer(serializers.ModelSerializer):
 
+
+class ChatSerializer(serializers.ModelSerializer):
+    starter = UserSerializer()
+    opponent = UserSerializer()
+    class Meta:
+        model = Chat
+        fields = [
+            'id',
+            'isNewMessages',
+            'updatedAt',
+            'starter',
+            'opponent',
+
+            ]
+
+class ChatsSerializer(serializers.ModelSerializer):
+    starter = UserSerializer()
+    opponent = UserSerializer()
     last_message = serializers.CharField(source='get_last_message_text')
     last_message_user_id = serializers.CharField(source='get_last_message_user_id')
     last_message_user_name = serializers.CharField(source='get_last_message_user_name')
@@ -16,6 +33,8 @@ class ChatsSerializer(serializers.ModelSerializer):
             'id',
             'isNewMessages',
             'updatedAt',
+            'starter',
+            'opponent',
             'last_message',
             'last_message_user_id',
             'last_message_user_avatar',
@@ -39,6 +58,7 @@ class MessageSerializer(serializers.ModelSerializer):
 class MessagesSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     rentUnit = TechniqueUnitSerializer()
+    
     class Meta:
         model = Message
         fields = [
@@ -55,4 +75,5 @@ class MessagesSerializer(serializers.ModelSerializer):
             'rentStartTime',
             'rentEndTime',
             'createdAt',
+            'chat'
                   ]

@@ -7,6 +7,7 @@ class Notification(models.Model):
     user = models.ForeignKey(User, blank=False, null=True, on_delete=models.SET_NULL,
                               verbose_name='Юзер')
     is_new = models.BooleanField(default=True)
+    chat_id = models.IntegerField(default=0)
     text = models.CharField(max_length=255,blank=True,null=True)
     url = models.CharField(max_length=255,blank=True,null=True)
     is_user_notified = models.BooleanField(default=False)
