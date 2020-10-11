@@ -44,7 +44,6 @@ class TechniqueFilterValue(models.Model):
 
 class TechniqueCategory(models.Model):
     """Категория техники"""
-
     name = models.CharField('Категория техники', max_length=255, blank=False, null=True)
     image = models.ImageField('Изображение (265 x 185)', upload_to='technique/type/', blank=False, null=True)
     name_lower = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
@@ -132,6 +131,7 @@ class TechniqueUnit(models.Model):
     rent_price = models.IntegerField('Стоимость аренды', blank=False, null=True)
     description = models.TextField('Описание', blank=False, null=True)
     features = models.TextField('Характеристики', blank=False, null=True)
+    year = models.IntegerField('Год', blank=True, null=True)
     rating = models.IntegerField('Рейтинг', default=0)
     rate_times = models.IntegerField('Кол-во отзывов', default=0)
     rate_value = models.IntegerField('Сумма оценок', default=0)
@@ -167,8 +167,6 @@ class TechniqueUnit(models.Model):
                 filters[i].name_slug:values[i].value
             })
         return result
-
-
 
     def __str__(self):
         return self.name
@@ -209,9 +207,10 @@ class TechniqueUnitImageDoc(models.Model):
                                 verbose_name='Документы для',related_name='docs')
     image = models.ImageField('Документы', upload_to='technique/items/', blank=False, null=True)
 
-
     def image_tag(self):
         return mark_safe('<img src="{}" width="100" height="100" />'.format(self.image.url))
 
     image_tag.short_description = 'Документы'
+
+
 

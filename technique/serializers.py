@@ -99,7 +99,9 @@ class TechniqueUnitSerializer(serializers.ModelSerializer):
                   'rating',
                   'rate_times',
                   'is_free',
-                  'images'
+                  'images',
+                  'year',
+
                   ]
 
 
@@ -144,5 +146,6 @@ class TechniqueUnitDetalSerializer(serializers.ModelSerializer):
                   'images',
                   'unit_feedbacks',
                   'filter',
-                  'filter_value'
+                  'filter_value',
+            'year',
                   ]

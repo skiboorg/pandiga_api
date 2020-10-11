@@ -3,4 +3,4 @@ from .models import *
 admin.site.register(User)
 admin.site.register(PaymentObj)
 admin.site.register(PaymentType)
-admin.site.register(RefferalMoney)
+admin.site.register(Refferal)

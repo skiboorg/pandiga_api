@@ -9,15 +9,14 @@ from .models import *
 
 # User = get_user_model()
 
-class RefferalsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Refferals
-        fields = '__all__'
+
 
 class PaymentsTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentType
         fields = '__all__'
+
+
 class PaymentsSerializer(serializers.ModelSerializer):
     type = PaymentsTypeSerializer(many=False)
     class Meta:
@@ -62,7 +61,8 @@ class UserSerializerTemp(serializers.ModelSerializer):
             'rent_count',
             'date_joined',
             'last_online',
-            'is_online'
+            'is_online',
+            'is_person',
 
                   ]
 
@@ -95,7 +95,12 @@ class UserSerializer(serializers.ModelSerializer):
             'rent_count',
             'date_joined',
             'last_online',
-             'is_online'
+             'is_online',
+            'is_person',
+            'organization_name',
+            'inn',
+            'ogrn',
+            'favorites'
 
                   ]
 
@@ -172,3 +177,16 @@ class UserCreateSerializer(serializers.ModelSerializer):
                 user.save(update_fields=["is_active"])
         return user
 
+
+
+
+class RefferalsSerializer(serializers.ModelSerializer):
+    refferal = UserSerializer(many=False)
+    class Meta:
+        model = Refferal
+        fields = [
+            'id',
+            'earned',
+            'refferal',
+            'created_at'
+        ]

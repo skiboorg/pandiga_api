@@ -5,6 +5,9 @@ urlpatterns = [
 
 
     path('me/', views.GetUser.as_view()),
+    path('fav_add/<int:unit_id>', views.FavAdd.as_view()),
+    path('fav_del/<int:unit_id>', views.FavDel.as_view()),
+    path('fav_get/', views.FavGet.as_view()),
     path('get_user/<int:pk>', views.GetUserByID.as_view()),
     path('get_user_feedback', views.GetUserFeedbacks.as_view()),
     path('update/', views.UserUpdate.as_view()),
@@ -16,5 +19,6 @@ urlpatterns = [
     path('all_payments', views.GetAllPayments.as_view()),
     path('new_partner/', views.NewPartner.as_view()),
     path('get_refferals/', views.GetRefferals.as_view()),
+    # path('get_refferals_money/', views.GetRefferalsMoney.as_view()),
     path('check_payment/', views.UserCheckPayment.as_view()),
 ]

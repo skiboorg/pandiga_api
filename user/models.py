@@ -41,6 +41,7 @@ class User(AbstractUser):
     #                                      verbose_name='Персональный портнерский код')
 
     subscribe_type = models.ManyToManyField('technique.TechniqueType', blank=True, verbose_name='Тип техники для оповещений')
+    favorites = models.ManyToManyField('technique.TechniqueUnit', blank=True, verbose_name='Избранное')
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.SET_NULL,
                              verbose_name='Местоположение')
     avatar = models.ImageField('Фото', upload_to='user',blank=True,null=True)
@@ -165,23 +166,22 @@ class PaymentObj(models.Model):
         verbose_name = "Платеж"
         verbose_name_plural = "Платежи"
 
-class Refferals(models.Model):
-    master = models.ForeignKey(User,blank=True,null=True,
-                             on_delete=models.CASCADE,
-                             related_name='master_user')
-    slaves = models.ManyToManyField(User, null=True, related_name='slaves')
 
-class RefferalMoney(models.Model):
+
+class Refferal(models.Model):
     """Начисления партеров"""
+    master = models.ForeignKey(User, blank=True, null=True,
+                               on_delete=models.CASCADE,
+                               related_name='master_user_money')
     refferal = models.ForeignKey(User,blank=True,null=True,
                              on_delete=models.CASCADE,
                              verbose_name='Рефферал')
-    earned = models.IntegerField('Начислено', blank=True, null=True)
+    earned = models.IntegerField('Начислено', default=0)
     action = models.CharField('Операция', max_length=10, blank=True,null=True, default=0)
     created_at = models.DateTimeField("Дата начисления", auto_now_add=True)
 
     def __str__(self):
-        return f'Начисление по коду {self.partner.code}'
+        return f'Начисление от  {self.refferal.id}'
 
     class Meta:
         verbose_name = "Начисление"

@@ -10,6 +10,7 @@ from .serializers import *
 from .models import *
 from rest_framework import generics
 from yandex_checkout import Configuration, Payment
+from technique.serializers import TechniqueUnitSerializer
 import settings
 
 class UserAddFeedback(APIView):
@@ -25,6 +26,26 @@ class UserAddFeedback(APIView):
         order.worker_feedback = True
         order.save()
         return Response(status=201)
+
+
+class FavGet(generics.ListAPIView):
+    serializer_class = TechniqueUnitSerializer
+
+    def get_queryset(self):
+        return self.request.user.favorites
+
+class FavDel(APIView):
+    def post(self,request,unit_id):
+        request.user.favorites.remove(unit_id)
+        return Response(status=200)
+
+
+class FavAdd(APIView):
+    def post(self,request,unit_id):
+        print(unit_id)
+        request.user.favorites.add(unit_id)
+        return Response(status=200)
+
 
 class UserUpdate(APIView):
     permission_classes = [IsAuthenticated]
@@ -85,17 +106,17 @@ class sendSMS(APIView):
         auth_token = settings.TWILLO_AUTH_TOKEN
         client = Client(account_sid, auth_token)
         sms_number = create_random_string(digits=True,num=4)
-        messageSend = False
-        # messageSend = True
-        # try:
-        #     message = client.messages.create(
-        #         to=request.data['phone'],
-        #         from_="test",
-        #         body=f'PANDIGA. Код подтверждения: {sms_number}')
-        #     print('message.sid=', message.sid)
-        #     messageSend = True
-        # except:
-        #     messageSend = False
+        # messageSend = False
+        messageSend = True
+        try:
+            message = client.messages.create(
+                to=request.data['phone'],
+                from_="test",
+                body=f'PANDIGA. Код подтверждения: {sms_number}')
+            print('message.sid=', message.sid)
+            messageSend = True
+        except:
+            messageSend = False
         if messageSend:
             return Response({'result': True, 'code': sms_number})
         else:
@@ -137,25 +158,36 @@ class UserNewPayment(APIView):
         return Response(payment.confirmation.confirmation_url)
 
 
-class GetRefferals(APIView):
-    def get(self, request):
-        pass
+# class GetRefferalsMoney(generics.ListAPIView):
+#     serializer_class = RefferalsMoneySerializer
+#
+#     def get_queryset(self):
+#         return RefferalMoney.objects.filter(master=self.request.user)
+
+class GetRefferals(generics.ListAPIView):
+    serializer_class = RefferalsSerializer
+    def get_queryset(self):
+        return Refferal.objects.filter(master=self.request.user)
 
 class NewPartner(APIView):
     def post(self, request):
         print(request.data)
         user=None
+        refferal = None
         try:
             user = User.objects.get(partner_code=request.data.get('code'))
+            print(user)
         except:
             pass
-        if user:
-            try:
-                master = Refferals.objects.get(master=user)
-                master.slaves.add(request.user)
-            except:
-                master = Refferals.objects.create(master=user)
-                master.slaves.add(request.user)
+
+        try:
+            refferal = Refferal.objects.get(master=user,refferal=request.user)
+            print('refferal found')
+        except:
+            print('refferal not found')
+
+        if not refferal and user:
+            Refferal.objects.create(master=user, refferal=request.user)
 
             return Response({'status':True}, status=200)
         else:
@@ -181,16 +213,17 @@ class UserCheckPayment(APIView):
                 paymentObj.user.save(force_update=True)
 
 
-            all_partners = User.objects.filter(refferals__in=[paymentObj.user])
-            print(all_partners)
-            if all_partners.exists():
-                for partner in all_partners:
+            all_refferals = Refferal.objects.filter(refferal=paymentObj.user)
 
-                    partner.partner_balance += int(paymentObj.amount * 10 / 100)
-                    partner.save()
-                    RefferalMoney.objects.create(refferal=paymentObj.user,
-                                                earned=int(paymentObj.amount * 10 / 100),
-                                                action='Пополнение баланса')
+            print(all_refferals)
+            if all_refferals.exists():
+                for reffreal in all_refferals:
+                    print(reffreal.master)
+                    reffreal.master.partner_balance += int(paymentObj.amount * 10 / 100)
+                    reffreal.master.save()
+                    reffreal.earned += int(paymentObj.amount * 10 / 100)
+                    reffreal.save()
+
 
         return Response(status=200)
 

@@ -55,6 +55,7 @@ class TechniqueUnitAdd(APIView):
         unit = TechniqueUnit.objects.create(type=type,
                                      owner=request.user,
                                      name=unit_data['name'],
+                                     year=unit_data['year'],
                                      min_rent_time=unit_data['min_rent_time'],
                                      rent_type=unit_data['rent_type'],
                                      rent_price=unit_data['rent_price'],
