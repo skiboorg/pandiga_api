@@ -103,12 +103,15 @@ class User(AbstractUser):
     #         return 0
 
     def get_full_name(self):
-        if self.first_name and self.last_name:
-            return f'{self.first_name} {self.last_name}'
-        elif self.first_name and not self.last_name:
-            return f'{self.first_name}'
-        elif not self.first_name and not self.last_name:
-            return 'Неизвестный пользователь'
+        if self.is_person:
+            if self.first_name and self.last_name:
+                return f'{self.first_name} {self.last_name}'
+            elif self.first_name and not self.last_name:
+                return f'{self.first_name}'
+            elif not self.first_name and not self.last_name:
+                return 'Неизвестный пользователь'
+        else:
+            return f'{self.organization_name}'
 
 
     # def get_avatar(self):
