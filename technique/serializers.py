@@ -101,6 +101,7 @@ class TechniqueUnitSerializer(serializers.ModelSerializer):
                   'is_free',
                   'images',
                   'year',
+            'created_at'
 
                   ]
 
@@ -148,4 +149,5 @@ class TechniqueUnitDetalSerializer(serializers.ModelSerializer):
                   'filter',
                   'filter_value',
             'year',
+            'created_at'
                   ]
