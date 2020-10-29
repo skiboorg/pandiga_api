@@ -33,11 +33,16 @@ class TechniqueFilter(models.Model):
 class TechniqueFilterValue(models.Model):
     """Значение фильтр еденицы техники"""
     filter = models.ForeignKey(TechniqueFilter, blank=True, null=True, db_index=True,
-                               on_delete=models.SET_NULL,verbose_name='Фильтр',related_name='values')
+                               on_delete=models.SET_NULL,verbose_name='Фильтр',
+                               related_name='values')
     label = models.CharField('label', max_length=255, blank=True, null=True)
+    label_lower = models.CharField('label', max_length=255, blank=True, null=True, editable=False)
     value = models.CharField('value', max_length=255, blank=True, null=True)
     is_show_in_item_card = models.BooleanField(default=False)
 
+    def save(self, *args, **kwargs):
+        self.label_lower = self.label.lower()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'{self.filter.name} {self.label}'

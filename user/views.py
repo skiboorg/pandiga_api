@@ -17,12 +17,12 @@ class UserAddFeedback(APIView):
     def post(self,request):
         data = request.data
         print(data['data']['rate_value'])
-        UserFeedback.objects.create(user_id=data['to'],
+        order = Order.objects.get(id=data['order'])
+        UserFeedback.objects.create(user=order.owner,
                                     author=request.user,
                                     text=data['data']['rate_text'],
                                     value=data['data']['rate_value']
                                     )
-        order = Order.objects.get(id=data['order'])
         order.worker_feedback = True
         order.save()
         return Response(status=201)

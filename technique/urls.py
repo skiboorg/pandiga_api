@@ -15,4 +15,5 @@ urlpatterns = [
     path('unit/<str:name_slug>', views.TechniqueUnitDetailView.as_view()),
     path('add_feedback/', views.TechniqueUnitAddFeedback.as_view()),
     path('filter/', views.TechniqueFilter.as_view()),
+    path('search/<str:query>', views.TechniqueSearch.as_view()),
 ]

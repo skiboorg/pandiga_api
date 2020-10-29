@@ -170,6 +170,53 @@ class TechniqueFilterListView(APIView):
         return Response(serializer.data,headers=None)
 
 
+class TechniqueSearch(APIView):
+    def get(self, request,query):
+        f_a = TechniqueFilterValue.objects.all()
+        for f in f_a:
+            f.save()
+        print(query)
+        # filter_values = TechniqueFilterValue.objects.filter(label_lower__startswith=query.lower())
+        # print(filter_values)
+        # filters=[]
+        # for filter_value in filter_values:
+        #     filters.append(filter_value.filter)
+        # print(filters)
+        # types=TechniqueType.objects.filter(filters__in=filters)
+        # print(types)
+        # result=[]
+        # for type in types:
+        #     result.append({
+        #         'id':type.id,
+        #         'query':query.upper(),
+        #         'type':type.name
+        #     })
+
+        filter_values = TechniqueFilterValue.objects.filter(label_lower__startswith=query.lower())
+        print(filter_values)
+        filters = []
+        result = []
+        for filter_value in filter_values:
+
+            types = TechniqueType.objects.filter(filters=filter_value.filter)
+            print(types)
+
+            for type in types:
+                result.append({
+                    'type_id': type.id,
+                    'type_name_slug': type.name_slug,
+                    'type_name': type.name,
+                    'filter_id': filter_value.filter.id,
+                    'filter_value_id':filter_value.id,
+                    'filter_value_label':filter_value.label.upper(),
+                    'filter_value':filter_value.value,
+                    'filter_name_slug':filter_value.filter.name_slug,
+
+                })
+
+        return Response(result,status=200)
+
+
 class TechniqueFilter(APIView):
     pagination_class = UnitsPagination
     def post(self,request):
