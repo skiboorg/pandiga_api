@@ -172,9 +172,9 @@ class TechniqueFilterListView(APIView):
 
 class TechniqueSearch(APIView):
     def get(self, request,query):
-        f_a = TechniqueFilterValue.objects.all()
-        for f in f_a:
-            f.save()
+        # f_a = TechniqueFilterValue.objects.all()
+        # for f in f_a:
+        #     f.save()
         print(query)
         # filter_values = TechniqueFilterValue.objects.filter(label_lower__startswith=query.lower())
         # print(filter_values)
