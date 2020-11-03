@@ -13,6 +13,11 @@ def create_city(request):
         print(i)
 
 
+class SearchCityID(generics.RetrieveAPIView):
+    serializer_class = CitiesSerializer
+    def get_object(self):
+        return City.objects.get(id=self.request.query_params.get('city_id'))
+
 class SearchCity(generics.ListAPIView):
     serializer_class = CitiesSerializer
 

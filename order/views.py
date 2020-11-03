@@ -88,13 +88,13 @@ class OrdersGet(generics.ListAPIView):
             orders = Order.objects.filter(is_moderated=True,
                                           is_active=True,
                                           is_finished=False,
-                                          worker__isnull=True)
+                                          worker__isnull=True).order_by('-created_at')
         else:
             orders = Order.objects.filter(type__name_slug=type_slug,
                                           is_moderated=True,
                                           is_finished=False,
                                           is_active=True,
-                                          worker__isnull=True)
+                                          worker__isnull=True).order_by('-created_at')
         if city != '0':
             orders = orders.filter(city_id=city)
         return orders

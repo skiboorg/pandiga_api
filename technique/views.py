@@ -191,12 +191,24 @@ class TechniqueSearch(APIView):
         #         'query':query.upper(),
         #         'type':type.name
         #     })
-        all_types = TechniqueType.objects.filter(name_lower__startswith=query.lower())
+        all_types = TechniqueType.objects.filter(name_lower__contains=query.lower())
         print(all_types)
         filter_values = TechniqueFilterValue.objects.filter(label_lower__startswith=query.lower())
         print(filter_values)
         filters = []
         result = []
+        for type in all_types:
+            result.append({
+                'is_filter_value': False,
+                'type_id': type.id,
+                'type_name_slug': type.name_slug,
+                'type_name': type.name,
+                'filter_id': '',
+                'filter_value_id': '',
+                'filter_value_label': '',
+                'filter_value': '',
+                'filter_name_slug': '',
+            })
         for filter_value in filter_values:
             types = TechniqueType.objects.filter(filters=filter_value.filter)
             print(types)
@@ -213,18 +225,7 @@ class TechniqueSearch(APIView):
                     'filter_name_slug':filter_value.filter.name_slug,
 
                 })
-        for type in all_types:
-            result.append({
-                'is_filter_value': False,
-                'type_id': type.id,
-                'type_name_slug': type.name_slug,
-                'type_name': type.name,
-                'filter_id': '',
-                'filter_value_id': '',
-                'filter_value_label': '',
-                'filter_value': '',
-                'filter_name_slug': '',
-            })
+
 
 
 
