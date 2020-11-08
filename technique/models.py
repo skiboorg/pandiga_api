@@ -203,7 +203,7 @@ class TechniqueUnitImage(models.Model):
     image_tag.short_description = 'Изображение'
 
     def save(self, *args, **kwargs):
-        self.image.save(f'{self.techniqueitem.name_slug}.jpg',File(image_resize_and_watermark(self.image,True,1200,800)), save=False)
+        self.image.save(f'{self.techniqueitem.name_slug}.jpg',File(image_resize_and_watermark(self.image,True,610,460)), save=False)
         self.image_thumb.save(f'{self.techniqueitem.name_slug}-thumb.jpg',File(image_resize_and_watermark(self.image,False,240,180)), save=False)
         super(TechniqueUnitImage, self).save(*args, **kwargs)
 

@@ -74,7 +74,7 @@ class UserOrdersGet(generics.ListAPIView):
     pagination_class = OrdersResultsPagination
     def get_queryset(self):
         user = self.request.user
-        orders = Order.objects.filter(owner=user).order_by('-worker')
+        orders = Order.objects.filter(owner=user).order_by('-created_at')
         return orders
 
 class OrdersGet(generics.ListAPIView):
