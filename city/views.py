@@ -9,8 +9,11 @@ def create_city(request):
     from .cities import cities
 
     for i in cities:
-        City.objects.create(city=i['city'],region=i['region'])
-        print(i)
+        try:
+            city = City.objects.get(city=i['city'])
+        except:
+            City.objects.create(city=i['city'],region=i['region'])
+            print(i)
 
 
 class SearchCityID(generics.RetrieveAPIView):

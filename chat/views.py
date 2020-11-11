@@ -52,6 +52,8 @@ class SetChatRead(APIView):
     def post(self,request, chat_id):
         chat = Chat.objects.get(id=chat_id)
         messages = chat.messages
+        chat.isNewMessages = False
+        chat.save()
         messages.update(isUnread=False)
         return Response(status=200)
 

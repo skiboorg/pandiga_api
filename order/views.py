@@ -123,6 +123,7 @@ class OrderApplyDecline(APIView):
         order = Order.objects.get(id=request_data['order_id'])
         user = User.objects.get(id=request_data['worker_id'])
         order.apply_units.remove(request_data['apply_unit_id'])
+        order.decline_units.add(request_data['apply_unit_id'])
         createNotification('order', user, f'Вас не выбрали исполнителем заявки №{order.id}', f'/orders/{order.name_slug}')
         return Response(status=200)
 

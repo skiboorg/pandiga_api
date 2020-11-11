@@ -23,7 +23,8 @@ class Order(models.Model):
                                           verbose_name='ФильтрыЗначения',
                                           related_name='order_filter_values')
     coords = models.CharField('Координаты', max_length=255, blank=True, null=True)
-    apply_units = models.ManyToManyField(TechniqueUnit, verbose_name='Предложенная техника')
+    apply_units = models.ManyToManyField(TechniqueUnit, verbose_name='Предложенная техника',related_name='apply_units')
+    decline_units = models.ManyToManyField(TechniqueUnit, verbose_name='Отказы техники',related_name='decline_units')
     name = models.CharField('Название', max_length=255, blank=False, null=True)
     name_lower = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
@@ -58,5 +59,4 @@ class Order(models.Model):
                 self.name_slug = slug
 
         super(Order, self).save(*args, **kwargs)
-
 

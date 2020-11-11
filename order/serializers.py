@@ -11,6 +11,7 @@ class OrderSerializer(serializers.ModelSerializer):
     worker = UserSerializer(many=False)
     worker_unit = TechniqueUnitSerializer(many=False)
     apply_units = TechniqueUnitSerializer(many=True)
+    decline_units = TechniqueUnitSerializer(many=True)
     class Meta:
         model = Order
         fields = [
@@ -35,7 +36,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'update_at',
             'is_finished',
             'customer_feedback',
-            'worker_feedback'
+            'worker_feedback',
+            'decline_units'
         ]
 
 
@@ -46,7 +48,8 @@ class OrdersSerializer(serializers.ModelSerializer):
     type = TechniqueTypeSerializer(many=False)
     worker = UserSerializer(many=False)
     worker_unit = TechniqueUnitSerializer(many=False)
-    apply_units = TechniqueUnitSerializer
+    # apply_units = TechniqueUnitSerializer(many=True)
+
     city = CitySerializer(required=False, read_only=True)
     class Meta:
         model = Order
@@ -73,7 +76,8 @@ class OrdersSerializer(serializers.ModelSerializer):
             'update_at',
             'is_finished',
             'coords',
-            'city'
+            'city',
+            'decline_units'
 
 
 

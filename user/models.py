@@ -130,7 +130,7 @@ class UserFeedback(models.Model):
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
 
     def save(self, *args, **kwargs):
-        if self.text and self.value:
+        if self.value:
             set_user_rating(self.user.id,self.value)
         super(UserFeedback, self).save(*args, **kwargs)
 
