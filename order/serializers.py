@@ -9,6 +9,7 @@ class OrderSerializer(serializers.ModelSerializer):
     filter_value = serializers.SlugRelatedField(slug_field='label', many=True, read_only=True)
     type = TechniqueTypeSerializer(many=False)
     worker = UserSerializer(many=False)
+    owner = UserSerializer(many=False)
     worker_unit = TechniqueUnitSerializer(many=False)
     apply_units = TechniqueUnitSerializer(many=True)
     decline_units = TechniqueUnitSerializer(many=True)
@@ -37,7 +38,8 @@ class OrderSerializer(serializers.ModelSerializer):
             'is_finished',
             'customer_feedback',
             'worker_feedback',
-            'decline_units'
+            'decline_units',
+            'owner'
         ]
 
 
