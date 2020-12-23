@@ -21,4 +21,5 @@ urlpatterns = [
     path('get_refferals/', views.GetRefferals.as_view()),
     # path('get_refferals_money/', views.GetRefferalsMoney.as_view()),
     path('check_payment/', views.UserCheckPayment.as_view()),
+    path('mail/send_test', SendTestMail.as_view()),
 ]

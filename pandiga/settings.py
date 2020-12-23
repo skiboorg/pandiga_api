@@ -28,6 +28,15 @@ CORS_ORIGIN_ALLOW_ALL = True
 ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'user.User'
 
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = settings.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = settings.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'd@skib.org'
+SERVER_EMAIL = 'd@skib.org'
+
+
 # Application definition
 
 INSTALLED_APPS = [

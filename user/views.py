@@ -12,6 +12,8 @@ from rest_framework import generics
 from yandex_checkout import Configuration, Payment
 from technique.serializers import TechniqueUnitSerializer
 import settings
+from django.core.mail import send_mail,EmailMessage
+
 
 class UserAddFeedback(APIView):
     def post(self,request):
@@ -237,3 +239,24 @@ class GetAllPayments(generics.ListAPIView):
 class GetAllPaymentsTypes(generics.ListAPIView):
     queryset = PaymentType.objects.filter()
     serializer_class = PaymentsTypesSerializer
+
+
+class SendTestMail(APIView):
+    def post(self,request):
+        msg = ''
+        title = ''
+        if request.data.get("type") == 'callBack':
+            msg = f'Телефон :{request.data.get("phone")}'
+            title = 'Форма обратной связи (кухни)'
+        if request.data.get("type") == 'quiz':
+            msg = f'Телефон :{request.data.get("phone")} | Ответы : {request.data.get("quiz")}'
+            title = 'Форма квиза (кухни)'
+
+        file = None
+        if request.FILES.get('file'):
+            file = request.FILES.get('file')
+        mail = EmailMessage(title, msg, 'd@skib.org', ('d@skib.org',))
+        if file:
+            mail.attach(file.name, file.read(), file.content_type)
+        mail.send()
+        return Response({'result':'ok'})
