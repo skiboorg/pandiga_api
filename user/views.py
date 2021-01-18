@@ -1,5 +1,8 @@
 import json
 import uuid
+
+from django.http import HttpResponseRedirect
+
 from order.models import Order
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -241,8 +244,38 @@ class GetAllPaymentsTypes(generics.ListAPIView):
     serializer_class = PaymentsTypesSerializer
 
 
+class UserRecoverPassword(APIView):
+    def post(self,request):
+        user = None
+        try:
+            user = User.objects.get(phone=request.data['phone'])
+        except:
+            user = None
+        if user:
+            account_sid = settings.TWILLO_ACCOUNT_SID
+            auth_token = settings.TWILLO_AUTH_TOKEN
+            client = Client(account_sid, auth_token)
+            sms_number = create_random_string(digits=True, num=8)
+            # messageSend = False
+            messageSend = True
+            try:
+                message = client.messages.create(
+                    to=request.data['phone'],
+                    from_="test",
+                    body=f'PANDIGA. Ваш новый пароль: {sms_number}')
+                user.set_password(sms_number)
+                user.save()
+
+                messageSend = True
+            except:
+                messageSend = False
+            return Response({'result': True, 'email': user.email}, status=200)
+        else:
+            return Response({'result': False}, status=200)
+
 class SendTestMail(APIView):
     def post(self,request):
+        print(request.data)
         msg = ''
         title = ''
         if request.data.get("type") == 'callBack':
@@ -260,3 +293,32 @@ class SendTestMail(APIView):
             mail.attach(file.name, file.read(), file.content_type)
         mail.send()
         return Response({'result':'ok'})
+
+
+class BflQuiz(APIView):
+    def post(self,request):
+        msg = ''
+        title = ''
+        if request.data.get("type") == 'callBack':
+            msg = f'Телефон :{request.data.get("phone")}'
+            title = 'Форма обратной связи (БФЛ)'
+        if request.data.get("type") == 'quiz':
+            msg = f'Телефон :{request.data.get("phone")} | Ответы : {request.data.get("quiz")}'
+            title = 'Форма квиза (БФЛ)'
+        mail = EmailMessage(title, msg, 'd@skib.org', ('d@skib.org',))
+
+        mail.send()
+        return Response({'result':'ok'})
+
+class LandingMail(APIView):
+    def post(self,request):
+        print(request.data)
+        title = 'Форма обратной связи '
+        msg = f'Email :{request.data.get("email")} | Name :{request.data.get("name")} |' \
+              f' Phone :{request.data.get("phone")} | Сompany :{request.data.get("company")} | ' \
+              f'Manager :{request.data.get("manager")} | Budget :{request.data.get("budget")} |' \
+              f'Message :{request.data.get("message")} '
+        mail = EmailMessage(title, msg, 'd@skib.org', ('d@skib.org',))
+
+        mail.send()
+        return HttpResponseRedirect('/')

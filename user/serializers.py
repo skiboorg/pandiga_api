@@ -63,7 +63,7 @@ class UserSerializerTemp(serializers.ModelSerializer):
             'last_online',
             'is_online',
             'is_person',
-            'units',
+            # 'units',
 
                   ]
 
@@ -72,6 +72,7 @@ class UserSerializer(serializers.ModelSerializer):
     # avatar = serializers.CharField(source='get_avatar',read_only=True,required=False)
     avatar = serializers.SerializerMethodField()
     city = CitySerializer(required=False,read_only=True)
+
     class Meta:
         model = User
         fields = [
@@ -102,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
             'inn',
             'ogrn',
             'favorites',
-            'units',
+            # 'units',
 
                   ]
 
