@@ -25,4 +25,5 @@ urlpatterns = [
     path('mail/send_test', views.SendTestMail.as_view()),
     path('mail/bfl', views.BflQuiz.as_view()),
     path('mail/land', views.LandingMail.as_view()),
+    path('mail/astra', views.LandingAstra.as_view()),
 ]

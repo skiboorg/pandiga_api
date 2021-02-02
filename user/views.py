@@ -310,6 +310,21 @@ class BflQuiz(APIView):
         mail.send()
         return Response({'result':'ok'})
 
+class LandingAstra(APIView):
+    def post(self,request):
+        msg = ''
+        title = ''
+        if request.data.get("type") == 'callBack':
+            msg = f'Телефон :{request.data.get("phone")} | Имя :{request.data.get("name")}'
+            title = 'Форма обратной связи (АСТРА)'
+        if request.data.get("type") == 'quiz':
+            msg = f'Телефон :{request.data.get("phone")} | Имя :{request.data.get("name")} | Ответы : {request.data.get("quiz")}'
+            title = 'Форма квиза (АСТРА)'
+        mail = EmailMessage(title, msg, 'dimon.skiborg@gmail.com', ('dimon.skiborg@gmail.com',))
+
+        mail.send()
+        return Response({'result':'ok'})
+
 class LandingMail(APIView):
     def post(self,request):
         print(request.data)
@@ -318,7 +333,7 @@ class LandingMail(APIView):
               f' Phone :{request.data.get("phone")} | Сompany :{request.data.get("company")} | ' \
               f'Manager :{request.data.get("manager")} | Budget :{request.data.get("budget")} |' \
               f'Message :{request.data.get("message")} '
-        mail = EmailMessage(title, msg, 'd@skib.org', ('d@skib.org',))
+        mail = EmailMessage(title, msg, 'd@skib.org', ('greshnik.im@gmail.com',))
 
         mail.send()
         return HttpResponseRedirect('/')
