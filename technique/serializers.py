@@ -38,6 +38,7 @@ class TechniqueFilterValueSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechniqueFilterValue
         fields = ['id',
+                  'filter',
                   'label',
                   'value',
                   'is_show_in_item_card'
@@ -122,9 +123,12 @@ class TechniqueUnitDetalSerializer(serializers.ModelSerializer):
     """Список едениц техники"""
     images = TechniqueUnitImageSerializer(many=True, read_only=True)
     unit_feedbacks = TechniqueUnitFeedbackSerializer(many=True, read_only=True)
-    filter = serializers.SlugRelatedField(slug_field='name',many=True, read_only=True)
+    # filter = serializers.SlugRelatedField(slug_field='name',many=True, read_only=True)
+    filter = TechniqueFilterSerializer(many=True, read_only=True)
     city = serializers.SlugRelatedField(slug_field='city',many=False, read_only=True)
-    filter_value = serializers.SlugRelatedField(slug_field='label',many=True, read_only=True)
+    # filter_value = serializers.SlugRelatedField(slug_field='label',many=True, read_only=True)
+    filter_value = TechniqueFilterValueSerializer(many=True, read_only=True)
+
     type = TechniqueTypeSerializer(many=False)
     owner = UserSerializer(many=False)
     class Meta:

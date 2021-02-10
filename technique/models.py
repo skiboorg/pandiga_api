@@ -162,16 +162,26 @@ class TechniqueUnit(models.Model):
                 self.name_slug = slug
         super(TechniqueUnit, self).save(*args, **kwargs)
 
+
+
     def get_filter_value(self):
         result=[]
         filters = self.filter.all()
         values = self.filter_value.all()
 
-        for i in range(0,len(filters)):
-            result.append({
-                filters[i].name_slug:values[i].value
-            })
+        for filter in filters:
+            for value in values:
+                if value.filter.name_slug == filter.name_slug:
+                    result.append({
+                            filter.name_slug:value.value
+                        })
+            print('filter',filter.id)
+
+        print(result)
         return result
+
+
+
 
     def __str__(self):
         return self.name
@@ -203,7 +213,7 @@ class TechniqueUnitImage(models.Model):
     image_tag.short_description = 'Изображение'
 
     def save(self, *args, **kwargs):
-        self.image.save(f'{self.techniqueitem.name_slug}.jpg',File(image_resize_and_watermark(self.image,True,610,460)), save=False)
+        self.image.save(f'{self.techniqueitem.name_slug}.jpg',File(image_resize_and_watermark(self.image,True,0,0)), save=False)
         self.image_thumb.save(f'{self.techniqueitem.name_slug}-thumb.jpg',File(image_resize_and_watermark(self.image,False,240,180)), save=False)
         super(TechniqueUnitImage, self).save(*args, **kwargs)
 

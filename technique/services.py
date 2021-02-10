@@ -22,12 +22,13 @@ def image_resize_and_watermark(image,watermarked,new_w,new_h):
     width, height = base_image.size
     transparent = Image.new('RGB', (width, height), (0, 0, 0, 0))
     transparent.paste(base_image, (0, 0))
-    transparent.thumbnail((new_w, new_h), Image.ANTIALIAS)
+    if new_h>0:
+        transparent.thumbnail((new_w, new_h), Image.ANTIALIAS)
     if watermarked:
         watermark = Image.open('static/img/wm.png')
         transparent.paste(watermark, (20, 20), mask=watermark)
     # transparent.show()
-    transparent.save(blob, 'JPEG')
+    transparent.save(blob, 'JPEG', quality=100)
     return blob
 
 
