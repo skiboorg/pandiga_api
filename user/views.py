@@ -320,7 +320,7 @@ class LandingAstra(APIView):
         if request.data.get("type") == 'quiz':
             msg = f'Телефон :{request.data.get("phone")} | Имя :{request.data.get("name")} | Ответы : {request.data.get("quiz")}'
             title = 'Форма квиза (АСТРА)'
-        mail = EmailMessage(title, msg, 'info@pandiga.ru', ('dimon.skiborg@gmail.com',))
+        mail = EmailMessage(title, msg, 'info@pandiga.ru', ('dimon.skiborg@gmail.com','igor@astrapromo.ru'))
 
         mail.send()
         return Response({'result':'ok'})
