@@ -102,6 +102,7 @@ class TechniqueUnitSerializer(serializers.ModelSerializer):
                   'is_free',
                   'images',
                   'year',
+                  'is_active',
             'created_at'
 
                   ]

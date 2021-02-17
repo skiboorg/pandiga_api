@@ -3,10 +3,11 @@ from user.serializers import UserSerializer
 from technique.serializers import TechniqueTypeSerializer,TechniqueUnitSerializer
 from .models import *
 from city.serializers import CitySerializer
+from technique.serializers import TechniqueFilterSerializer,TechniqueFilterValueSerializer
 
 class OrderSerializer(serializers.ModelSerializer):
-    filter = serializers.SlugRelatedField(slug_field='name', many=True, read_only=True)
-    filter_value = serializers.SlugRelatedField(slug_field='label', many=True, read_only=True)
+    filter = TechniqueFilterSerializer(many=True, read_only=True)
+    filter_value = TechniqueFilterValueSerializer(many=True, read_only=True)
     type = TechniqueTypeSerializer(many=False)
     worker = UserSerializer(many=False)
     owner = UserSerializer(many=False)
@@ -45,8 +46,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class OrdersSerializer(serializers.ModelSerializer):
     owner = UserSerializer(many=False)
-    filter = serializers.SlugRelatedField(slug_field='name', many=True, read_only=True)
-    filter_value = serializers.SlugRelatedField(slug_field='label', many=True, read_only=True)
+    # filter = serializers.SlugRelatedField(slug_field='name', many=True, read_only=True)
+    # filter_value = serializers.SlugRelatedField(slug_field='label', many=True, read_only=True)
+    filter = TechniqueFilterSerializer(many=True, read_only=True)
+    filter_value = TechniqueFilterValueSerializer(many=True, read_only=True)
     type = TechniqueTypeSerializer(many=False)
     worker = UserSerializer(many=False)
     worker_unit = TechniqueUnitSerializer(many=False)

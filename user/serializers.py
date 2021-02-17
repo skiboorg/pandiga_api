@@ -63,7 +63,7 @@ class UserSerializerTemp(serializers.ModelSerializer):
             'last_online',
             'is_online',
             'is_person',
-            # 'units',
+            'units',
 
                   ]
 
@@ -103,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
             'inn',
             'ogrn',
             'favorites',
-            # 'units',
+             'units',
 
                   ]
 

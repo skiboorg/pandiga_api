@@ -16,4 +16,6 @@ urlpatterns = [
     path('add_feedback/', views.TechniqueUnitAddFeedback.as_view()),
     path('filter/', views.TechniqueFilter.as_view()),
     path('search/<str:query>', views.TechniqueSearch.as_view()),
+    path('promote', views.TechniquePromote.as_view()),
+    path('pay', views.TechniquePay.as_view()),
 ]

@@ -22,6 +22,9 @@ urlpatterns = [
     # path('get_refferals_money/', views.GetRefferalsMoney.as_view()),
     path('check_payment/', views.UserCheckPayment.as_view()),
     path('recover_password', views.UserRecoverPassword.as_view()),
+    path('bonuses_to_money', views.BonusesToMoney.as_view()),
+
+
     path('mail/send_test', views.SendTestMail.as_view()),
     path('mail/bfl', views.BflQuiz.as_view()),
     path('mail/land', views.LandingMail.as_view()),

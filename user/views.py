@@ -244,6 +244,15 @@ class GetAllPaymentsTypes(generics.ListAPIView):
     serializer_class = PaymentsTypesSerializer
 
 
+class BonusesToMoney(APIView):
+    def post(self, request):
+        amount = request.data.get('amount')
+        request.user.partner_balance -= amount
+        request.user.balance += amount
+        request.user.save()
+        return Response( status=200)
+
+
 class UserRecoverPassword(APIView):
     def post(self,request):
         user = None

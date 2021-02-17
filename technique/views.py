@@ -9,7 +9,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from django.core.files import File as DjangoFile
 from .models import *
+from django.utils.timezone import now
 from .serializers import *
+import settings
+
 
 class UnitsPagination(PageNumberPagination):
     page_size = 10
@@ -84,7 +87,7 @@ class TechniqueUnitListView(APIView):
 
     def get(self,request):
         units = TechniqueUnit.objects.filter(type__name_slug=request.GET.get('type'),
-                                             is_active=True).order_by('-is_vip')
+                                             is_active=True).order_by('-is_vip','-promote_at')
         page = self.paginate_queryset(units)
         if page is not None:
             serializer = TechniqueUnitSerializer(page, many=True, context={'request': request})
@@ -415,3 +418,30 @@ def test(request):
     result = list(chain(*result_qs))
 
     return HttpResponse(result,status=200)
+
+
+class TechniquePromote(APIView):
+    def post(self,request):
+        unit_id = request.data.get('unit_id')
+        unit = TechniqueUnit.objects.get(id=unit_id)
+        result = False
+        if unit.owner.balance > settings.UNIT_PROMOTE_COST:
+            unit.promote_at = now()
+            unit.owner.balance -= settings.UNIT_PROMOTE_COST
+            unit.save()
+            unit.owner.save()
+            result = True
+        return Response({'result':result}, status=200)
+
+class TechniquePay(APIView):
+    def post(self,request):
+        unit_id = request.data.get('unit_id')
+        unit = TechniqueUnit.objects.get(id=unit_id)
+        result = False
+        if unit.owner.balance > settings.UNIT_PAY_COST:
+            unit.is_active = True
+            unit.owner.balance -= settings.UNIT_PAY_COST
+            unit.save()
+            unit.owner.save()
+            result = True
+        return Response({'result': result}, status=200)
