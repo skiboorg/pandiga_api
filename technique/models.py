@@ -30,6 +30,13 @@ class TechniqueFilter(models.Model):
         self.name_slug = slug
         super(TechniqueFilter, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = "Фильтр"
+        verbose_name_plural = "Фильтры"
+
 class TechniqueFilterValue(models.Model):
     """Значение фильтр еденицы техники"""
     filter = models.ForeignKey(TechniqueFilter, blank=True, null=True, db_index=True,
@@ -46,6 +53,14 @@ class TechniqueFilterValue(models.Model):
 
     def __str__(self):
         return f'{self.filter.name} {self.label}'
+
+
+    def __str__(self):
+        return f'{self.label} - {self.label}'
+
+    class Meta:
+        verbose_name = "Значение фильтра"
+        verbose_name_plural = "Значения фильтров"
 
 class TechniqueCategory(models.Model):
     """Категория техники"""
@@ -76,7 +91,11 @@ class TechniqueCategory(models.Model):
         super(TechniqueCategory, self).save(*args, **kwargs)
 
     def __str__(self):
-        return self.name
+        return f'{self.name_slug}'
+
+    class Meta:
+        verbose_name = "Категория"
+        verbose_name_plural = "Категории"
 
 class TechniqueType(models.Model):
     """Тип техники"""
@@ -107,8 +126,13 @@ class TechniqueType(models.Model):
             else:
                 self.name_slug = slug
         super(TechniqueType, self).save(*args, **kwargs)
+
     def __str__(self):
-        return self.name
+        return f'{self.name_slug}'
+
+    class Meta:
+        verbose_name = "Тип техники"
+        verbose_name_plural = "Типы техники"
 
 
 class TechniqueUnit(models.Model):
@@ -139,6 +163,7 @@ class TechniqueUnit(models.Model):
     year = models.IntegerField('Год', blank=True, null=True)
     rating = models.IntegerField('Рейтинг', default=0)
     rate_times = models.IntegerField('Кол-во отзывов', default=0)
+    ad_price = models.IntegerField('Стоимость объявления', default=0)
     rate_value = models.IntegerField('Сумма оценок', default=0)
     is_moderated = models.BooleanField('Проверена?', default=True)
     is_vip = models.BooleanField('ВИП?', default=False)
@@ -153,6 +178,7 @@ class TechniqueUnit(models.Model):
         self.name_lower = self.name.lower()
         if self.owner.is_vip:
             self.is_vip = True
+        self.ad_price = self.city.coefficient * self.type.category.price
         if not self.name_slug:
             slug = slugify(self.name)
             testSlug = TechniqueUnit.objects.filter(name_slug=slug)
@@ -162,7 +188,13 @@ class TechniqueUnit(models.Model):
                 self.name_slug = slug
         super(TechniqueUnit, self).save(*args, **kwargs)
 
+    def __str__(self):
+        return f'{self.name}'
 
+    class Meta:
+        ordering = ('-is_vip','-promote_at')
+        verbose_name = "Еденица техники"
+        verbose_name_plural = "Еденицы техники"
 
     def get_filter_value(self):
         result=[]
@@ -175,16 +207,13 @@ class TechniqueUnit(models.Model):
                     result.append({
                             filter.name_slug:value.value
                         })
-            print('filter',filter.id)
+            # print('filter',filter.id)
 
-        print(result)
+        # print(result)
         return result
 
 
 
-
-    def __str__(self):
-        return self.name
 
 class TechniqueUnitFeedback(models.Model):
     techniqueitem = models.ForeignKey(TechniqueUnit, blank=False, null=True, on_delete=models.CASCADE,

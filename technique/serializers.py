@@ -95,6 +95,7 @@ class TechniqueUnitSerializer(serializers.ModelSerializer):
             'is_moderated',
             'is_vip',
             'in_rent',
+            'ad_price',
                   'rent_type',
                   'rent_price',
                   'rating',

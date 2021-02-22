@@ -53,11 +53,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
 
-    'user',
-    'technique',
+    'user.apps.UserConfig',
+    'technique.apps.TechniqueConfig',
     'chat',
     'city',
-    'order',
+    'order.apps.OrderConfig',
     'notification'
 ]
 ASGI_APPLICATION = "pandiga.routing.application"

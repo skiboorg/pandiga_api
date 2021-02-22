@@ -248,7 +248,7 @@ class TechniqueFilter(APIView):
         result = []
         # ключи-значения переданных фильтров
         all_filters_values = []
-        order_type = 'created_at'
+        order_type = '-promote_at'
         if request_body['order_by']:
             order_type = request_body['order_by']
         for filter in request_body['primary_filter']:
@@ -268,13 +268,13 @@ class TechniqueFilter(APIView):
         for qs in filtered_qs:
             temp_qs = None
             for item in qs:
-                print('item.get_filter_value()', item.get_filter_value())
-                print('all_filters_values', all_filters_values)
+                # print('item.get_filter_value()', item.get_filter_value())
+                # print('all_filters_values', all_filters_values)
                 for subfilter in all_filters_values:
                     if subfilter not in item.get_filter_value():
-                        print('remove',item)
+                        # print('remove',item)
                         qs = qs.exclude(id=item.id)
-                        print('filter Qs', qs)
+                        # print('filter Qs', qs)
 
                 # if item.get_filter_value() != all_filters_values:
                 #     print('remove', item)
@@ -298,14 +298,16 @@ class TechniqueFilter(APIView):
                                     min_rent_time__lte=request_body['rent_time_to'],
                                     rent_type=request_body['rent_type'],
                                     is_active=True).order_by('-is_vip').order_by(order_type)
+                print('temp_qs', temp_qs)
             result_qs.append(temp_qs)
         # проверка на дубли
+        print('result_qs', result_qs)
         for single_qs in result_qs:
             for qs in single_qs:
                 if not qs in result:
                     result.append(qs)
         # serializer = TechniqueUnitSerializer(result, many=True)
-
+        print('result', result)
         if len(all_filters_values) == 0:
             if request_body['city_id']:
                 result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
@@ -316,7 +318,7 @@ class TechniqueFilter(APIView):
                                                       rent_type=request_body['rent_type'],
                                                           city_id=request_body['city_id'],
                                                           is_active=True,
-                                                      is_vip=True).order_by('-promote_at')
+                                                      is_vip=True).order_by('-is_vip', '-promote_at')
                 result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
                                                           rent_price__gte=request_body['rent_price_from'],
                                                           rent_price__lte=request_body['rent_price_to'],
@@ -325,7 +327,7 @@ class TechniqueFilter(APIView):
                                                           rent_type=request_body['rent_type'],
                                                             city_id=request_body['city_id'],
                                                             is_vip=False,
-                                                          is_active=True).order_by('-promote_at')
+                                                          is_active=True).order_by('-is_vip', '-promote_at')
             else:
                 result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
                                                           rent_price__gte=request_body['rent_price_from'],
@@ -334,7 +336,7 @@ class TechniqueFilter(APIView):
                                                           min_rent_time__lte=request_body['rent_time_to'],
                                                           rent_type=request_body['rent_type'],
                                                           is_active=True,
-                                                          is_vip=True).order_by('-promote_at')
+                                                          is_vip=True).order_by('-is_vip', '-promote_at')
                 result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
                                                             rent_price__gte=request_body['rent_price_from'],
                                                             rent_price__lte=request_body['rent_price_to'],
@@ -423,10 +425,12 @@ def test(request):
 class TechniquePromote(APIView):
     def post(self,request):
         unit_id = request.data.get('unit_id')
+        is_vip = request.data.get('is_pin')
         unit = TechniqueUnit.objects.get(id=unit_id)
         result = False
         if unit.owner.balance > settings.UNIT_PROMOTE_COST:
             unit.promote_at = now()
+            unit.is_vip = is_vip
             unit.owner.balance -= settings.UNIT_PROMOTE_COST
             unit.save()
             unit.owner.save()
