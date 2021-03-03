@@ -18,6 +18,11 @@ import settings
 from django.core.mail import send_mail,EmailMessage
 
 
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+
+
+
 class UserAddFeedback(APIView):
     def post(self,request):
         data = request.data
@@ -346,3 +351,15 @@ class LandingMail(APIView):
 
         mail.send()
         return HttpResponseRedirect('/')
+
+
+class LandingTest(APIView):
+    def post(self,request):
+        print(request.data)
+        msg_html = render_to_string('test.html', {'name': request.data.get('name'),
+                                                          'email': request.data.get('email'),
+                                                          'phone': request.data.get('phone')}
+                                    )
+        send_mail('Заполнена форма', None, 'info@pandiga.ru', ('dimon.skiborg@gmail.com',),
+                  fail_silently=False, html_message=msg_html)
+        return Response(status=200)
