@@ -16,6 +16,13 @@ class NotificationGetMessagesCount(APIView):
         notify = Notification.objects.filter(user=request.user, is_new=True, type='chat').order_by('-created_at')
         return Response({'new_messages': notify.count()}, status=200)
 
+class NotificationDelete(APIView):
+    def post(self, request):
+        data = request.data
+        notify = Notification.objects.get(id=data.get('id'))
+        notify.delete()
+        print(data)
+        return Response(status=200)
 class NotificationSetRead(APIView):
     def post(self,request):
         notify = Notification.objects.filter(user=request.user, is_new=True).order_by('-created_at')

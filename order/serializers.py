@@ -23,10 +23,9 @@ class OrderSerializer(serializers.ModelSerializer):
             'comment',
             'rent_type',
             'rentDate',
-            'rentStartDate',
-            'rentEndDate',
-            'rentStartTime',
-            'rentEndTime',
+            'rentDays',
+            'rentTime',
+            'rentHours',
             'created_at',
             'filter',
             'filter_value',
@@ -66,10 +65,9 @@ class OrdersSerializer(serializers.ModelSerializer):
             'comment',
             'rent_type',
             'rentDate',
-            'rentStartDate',
-            'rentEndDate',
-            'rentStartTime',
-            'rentEndTime',
+            'rentDays',
+            'rentTime',
+            'rentHours',
             'created_at',
             'filter',
             'filter_value',
@@ -82,9 +80,5 @@ class OrdersSerializer(serializers.ModelSerializer):
             'is_finished',
             'coords',
             'city',
-            'decline_units'
-
-
-
-                  ]
+            'decline_units']
 

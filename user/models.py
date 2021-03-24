@@ -44,7 +44,7 @@ class User(AbstractUser):
     favorites = models.ManyToManyField('technique.TechniqueUnit', blank=True, verbose_name='Избранное')
     city = models.ForeignKey(City, blank=True, null=True, on_delete=models.SET_NULL,
                              verbose_name='Местоположение')
-    avatar = models.ImageField('Фото', upload_to='user',blank=True,null=True)
+    avatar = models.ImageField('Фото', upload_to='user',default='profile.svg')
     photo = models.CharField('VK аватар', max_length=255, blank=True, null=True)
     first_name = models.CharField('Имя', max_length=50, blank=True, null=True, default='Иван')
     last_name = models.CharField('Фамилия', max_length=50, blank=True, null=True, default='Иванов')
@@ -81,13 +81,9 @@ class User(AbstractUser):
 
     objects = UserManager()
 
-    # def __str__(self):
-    #     if self.phone:
-    #         return f'{self.get_full_name()} {self.phone}'
-    #     elif self.email:
-    #         return f'{self.get_full_name()} {self.email}'
-    #     else:
-    #         return f'{self.get_full_name()} {self.id}'
+    def __str__(self):
+        return f'{self.get_full_name()} {self.phone}'
+
     #
     # def get_user_activity(self):
     #     if (timezone.now() - self.last_activity) > dt.timedelta(seconds=10):

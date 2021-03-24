@@ -39,9 +39,7 @@ class ChatsSerializer(serializers.ModelSerializer):
             'last_message_user_id',
             'last_message_user_avatar',
             'last_message_user_name',
-            'last_message_user_status'
-
-                  ]
+            'last_message_user_status']
 
 class MessageSerializer(serializers.ModelSerializer):
     user = UserSerializerTemp()
@@ -52,8 +50,7 @@ class MessageSerializer(serializers.ModelSerializer):
             'chat',
             'user',
             'message',
-            'createdAt',
-                  ]
+            'createdAt']
 
 class MessagesSerializer(serializers.ModelSerializer):
     user = UserSerializer()
@@ -70,10 +67,8 @@ class MessagesSerializer(serializers.ModelSerializer):
             'rentUnit',
             'rentType',
             'rentDate',
-            'rentStartDate',
-            'rentEndDate',
-            'rentStartTime',
-            'rentEndTime',
+            'rentDays',
+            'rentTime',
+            'rentHours',
             'createdAt',
-            'chat'
-                  ]
+            'chat']

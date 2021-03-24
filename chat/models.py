@@ -56,16 +56,15 @@ class Message(models.Model):
     user = models.ForeignKey(User, blank=False, null=True, on_delete=models.CASCADE, verbose_name='Сообщение от')
     message = models.TextField('Сообщение', blank=True,null=True)
     isUnread = models.BooleanField('Не прочитанное сообщение', default=True)
-    isRentMessage = models.BooleanField( default=False)
+    isRentMessage = models.BooleanField(default=False)
     rentUnit = models.ForeignKey(TechniqueUnit, blank=True, null=True,
-                                  on_delete=models.CASCADE, verbose_name='В чате')
+                                  on_delete=models.CASCADE, verbose_name='Техника для аренды в сообщении')
     # rentType усли True почасовая, если False посуточная
     rentType = models.BooleanField(default=True)
     rentDate = models.DateField(blank=True,null=True)
-    rentStartDate = models.DateField(blank=True,null=True)
-    rentEndDate = models.DateField(blank=True,null=True)
-    rentStartTime = models.TimeField(blank=True,null=True)
-    rentEndTime = models.TimeField(blank=True,null=True)
+    rentDays = models.IntegerField(blank=True,null=True)
+    rentTime = models.TimeField(blank=True,null=True)
+    rentHours = models.IntegerField(blank=True,null=True)
 
     createdAt = models.DateTimeField(auto_now_add=True)
 

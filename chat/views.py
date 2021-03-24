@@ -96,25 +96,17 @@ class ChatNewMessage(APIView):
         createNotification('chat', msg_to, 'Новое сообщение в чате', '/lk/chats',chat_id=chat.id)
         # async_to_sync(channel_layer.send)(msg_to.channel, {"type": "user.notify"})
         if request.data['isRentMessage']:
-            if request.data['rentType'] == 'true':
-                Message.objects.create(chat=chat,
-                                       user=request.user,
-                                       isRentMessage=True,
-                                       rentUnit_id=request.data['rentUnit'],
-                                       rentType=True,
-                                       rentDate=request.data['rentDate'],
-                                       rentStartTime=request.data['rentTime'][0],
-                                       rentEndTime=request.data['rentTime'][1],
-                                       message='Привет!')
-            if request.data['rentType'] == 'false':
-                Message.objects.create(chat=chat,
-                                       user=request.user,
-                                       isRentMessage=True,
-                                       rentUnit_id=request.data['rentUnit'],
-                                       rentType=False,
-                                       rentStartDate=request.data['rentDates'][0],
-                                       rentEndDate=request.data['rentDates'][1],
-                                       message='Привет!')
+            Message.objects.create(chat=chat,
+                                   user=request.user,
+                                   isRentMessage=True,
+                                   rentUnit_id=request.data['rentUnit'],
+                                   rentType=request.data['rentType'],
+                                   rentDate=request.data['rentDate'],
+                                   rentDays=request.data['rentDays'],
+                                   rentTime=request.data['rentTime'],
+                                   rentHours=request.data['rentHours'],
+                                   message='Привет!')
+
         else:
             Message.objects.create(chat=chat,
                                    user=request.user,

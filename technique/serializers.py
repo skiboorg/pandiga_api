@@ -77,37 +77,71 @@ class TechniqueUnitImageSerializer(serializers.ModelSerializer):
 
 
 class TechniqueUnitSerializer(serializers.ModelSerializer):
-    """Список едениц техники"""
-    type=TechniqueTypeSerializer(many=False)
+    """Список едениц техники для всех"""
+    type = TechniqueTypeSerializer(many=False)
     images = TechniqueUnitImageSerializer(many=True, read_only=True)
     city = serializers.SlugRelatedField(slug_field='city', read_only=True)
+
     class Meta:
         model = TechniqueUnit
         fields = [
-                    'id',
-                    'type',
-                    'name',
-                    'owner',
-                    'name_slug',
-                    'city',
-                    'coords',
-                  'min_rent_time',
+            'id',
+            'type',
+            'name',
+            'owner',
+            'name_slug',
+            'city',
+            'coords',
+            'min_rent_time',
             'is_moderated',
             'is_vip',
             'in_rent',
             'ad_price',
-                  'rent_type',
-                  'rent_price',
-                  'rating',
-                  'rate_times',
-                  'is_free',
-                  'images',
-                  'year',
-                  'is_active',
+            'rent_type',
+            'rent_price',
+            'rating',
+            'rate_times',
+            'is_free',
+            'images',
+            'year',
+            'is_active',
             'created_at'
 
-                  ]
+        ]
 
+class UserTechniqueUnitSerializer(serializers.ModelSerializer):
+    """Список едениц техники юзера"""
+    type = TechniqueTypeSerializer(many=False)
+    images = TechniqueUnitImageSerializer(many=True, read_only=True)
+    city = serializers.SlugRelatedField(slug_field='city', read_only=True)
+
+    class Meta:
+        model = TechniqueUnit
+        fields = [
+            'uuid',
+            'id',
+            'type',
+            'name',
+            'owner',
+            'name_slug',
+            'city',
+            'coords',
+            'min_rent_time',
+            'is_moderated',
+            'is_vip',
+            'in_rent',
+            'ad_price',
+            'rent_type',
+            'rent_price',
+            'rating',
+            'rate_times',
+            'is_free',
+            'images',
+            'year',
+            'is_active',
+            'created_at'
+
+        ]
 
 class TechniqueUnitFeedbackSerializer(serializers.ModelSerializer):
     """Список значений фильтров"""
@@ -115,10 +149,11 @@ class TechniqueUnitFeedbackSerializer(serializers.ModelSerializer):
     class Meta:
         model = TechniqueUnitFeedback
         fields = [
-                  'created_at',
-                  'text',
-                    'author'
-                  ]
+            'created_at',
+            'text',
+            'author',
+            'value'
+        ]
 
 
 class TechniqueUnitDetalSerializer(serializers.ModelSerializer):
@@ -137,23 +172,23 @@ class TechniqueUnitDetalSerializer(serializers.ModelSerializer):
         model = TechniqueUnit
         fields = [
             'id',
-                  'type',
-                  'owner',
-                  'name',
+            'type',
+            'owner',
+            'name',
             'city',
             'coords',
-                  'name_slug',
-                  'is_free',
-                  'min_rent_time',
-                  'rent_type',
-                  'rent_price',
-                  'rating',
-                  'rate_times',
-                  'description',
-                  'images',
-                  'unit_feedbacks',
-                  'filter',
-                  'filter_value',
+            'name_slug',
+            'is_free',
+            'min_rent_time',
+            'rent_type',
+            'rent_price',
+            'rating',
+            'rate_times',
+            'description',
+            'images',
+            'unit_feedbacks',
+            'filter',
+            'filter_value',
             'year',
             'created_at'
-                  ]
+        ]

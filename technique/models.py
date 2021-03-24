@@ -6,7 +6,7 @@ from django.core.files import File
 from user.models import User
 from technique.services import *
 from city.models import City
-
+import uuid
 
 class TechniqueFilter(models.Model):
     """Фильтр еденицы техники"""
@@ -137,6 +137,7 @@ class TechniqueType(models.Model):
 
 class TechniqueUnit(models.Model):
     """Еденица техники"""
+    uuid = models.UUIDField(default=uuid.uuid4)
     type = models.ForeignKey(TechniqueType, blank=True, null=True, db_index=True, on_delete=models.SET_NULL,
                              verbose_name='Тип техники')
     owner = models.ForeignKey(User, blank=False, null=True, on_delete=models.CASCADE,

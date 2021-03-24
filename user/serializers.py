@@ -6,7 +6,7 @@ from rest_framework import exceptions, serializers
 from djoser.conf import settings
 from city.serializers import CitySerializer
 from .models import *
-
+from settings import MAIN_DOMAIN
 # User = get_user_model()
 
 
@@ -63,7 +63,7 @@ class UserSerializerTemp(serializers.ModelSerializer):
             'last_online',
             'is_online',
             'is_person',
-            'units',
+            # 'units',
 
                   ]
 
@@ -103,7 +103,7 @@ class UserSerializer(serializers.ModelSerializer):
             'inn',
             'ogrn',
             'favorites',
-             'units',
+             # 'units',
 
                   ]
 
@@ -111,7 +111,7 @@ class UserSerializer(serializers.ModelSerializer):
         if obj.avatar:
             return self.context['request'].build_absolute_uri(obj.avatar.url)
         else:
-            return 'https://www.flaticon.com/svg/static/icons/svg/16/16330.svg'
+            return f'{MAIN_DOMAIN}/media/profile.svg'
 
 class UserFeedbackSerializer(serializers.ModelSerializer):
     author = UserSerializer(many=False,read_only=True)

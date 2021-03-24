@@ -11,8 +11,11 @@ urlpatterns = [
     path('units', views.TechniqueUnitListView.as_view()),
     path('user/units', views.TechniqueUserUnitsListView.as_view()),
     path('unit/add/', views.TechniqueUnitAdd.as_view()),
+    path('unit/edit/', views.TechniqueUnitEdit.as_view()),
+    path('unit/delete/', views.TechniqueUnitDelete.as_view()),
 
     path('unit/<str:name_slug>', views.TechniqueUnitDetailView.as_view()),
+    path('unit_edit/<str:uuid>', views.TechniqueUnitEditView.as_view()),
     path('add_feedback/', views.TechniqueUnitAddFeedback.as_view()),
     path('filter/', views.TechniqueFilter.as_view()),
     path('search/<str:query>', views.TechniqueSearch.as_view()),

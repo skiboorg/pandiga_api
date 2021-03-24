@@ -31,11 +31,12 @@ class Order(models.Model):
     rent_time = models.IntegerField('Время аренды', blank=False, null=True)
     # rent_type усли True почасовая, если False посуточная
     rent_type = models.BooleanField('Тип аренды почасовая', default=True)
+
     rentDate = models.DateField(blank=True, null=True)
-    rentStartDate = models.DateField(blank=True, null=True)
-    rentEndDate = models.DateField(blank=True, null=True)
-    rentStartTime = models.TimeField(blank=True, null=True)
-    rentEndTime = models.TimeField(blank=True, null=True)
+    rentDays = models.IntegerField(blank=True, null=True)
+    rentTime = models.TimeField(blank=True, null=True)
+    rentHours = models.IntegerField(blank=True, null=True)
+
     comment = models.TextField('Описание', blank=False, null=True)
     is_moderated = models.BooleanField('Проверена?', default=True)
     is_active = models.BooleanField('Учавстует в выдаче?', default=True)

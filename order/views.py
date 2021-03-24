@@ -13,7 +13,7 @@ from notification.services import createNotification
 
 
 class OrdersResultsPagination(PageNumberPagination):
-    page_size = 10
+    page_size = 6
     page_size_query_param = 'page_size'
     max_page_size = 10000
 
@@ -23,7 +23,7 @@ class OrdersResultsPagination(PageNumberPagination):
                 'next': self.get_next_link(),
                 'prev': self.get_previous_link(),
             },
-            'page_count':self.page.paginator.count,
+            'page_count':self.page.paginator.num_pages,
             'results':data
         })
 
@@ -160,42 +160,35 @@ class OrderDelete(APIView):
 
 class OrderAdd(APIView):
     def post(self, request):
-
         rent_data = json.loads(request.data['rent_data'])
         order = json.loads(request.data['order'])
         filters = json.loads(request.data['filters'])
-        print(order)
-        type = TechniqueType.objects.get(name_slug=order['selectedType'])
+        type = TechniqueType.objects.get(name_slug=order['selectedType']['name_slug'])
+
         try:
-            if rent_data['dates'] != '':
-                new_order = Order.objects.create(type=type,
-                                                 city_id=order['city_id'],
-                                                 coords=order['coords'],
-                                                 owner=request.user,
-                                                 name=order['name'],
-                                                 rent_type=order['rent_type'],
-                                                 rentStartDate=rent_data['dates'][0],
-                                                 rentEndDate=rent_data['dates'][1],
-                                                 comment=order['description']
-                                                 )
-            else:
-                new_order = Order.objects.create(type=type,
-                                                 city_id=order['city_id'],
-                                                 coords=order['coords'],
-                                                 owner=request.user,
-                                                 name=order['name'],
-                                                 rent_type=order['rent_type'],
-                                                 rentDate=rent_data['date'],
-                                                 rentStartTime=rent_data['time'][0],
-                                                 rentEndTime=rent_data['time'][1],
-                                                 comment=order['description']
-                                                 )
+            new_order = Order.objects.create(type=type,
+                                             city_id=order['city']['id'],
+                                             coords=order['coords'],
+                                             owner=request.user,
+                                             name=order['name'],
+                                             rent_type=order['rent_type'],
+                                             rentDate=rent_data['date'],
+                                             rentDays=rent_data['days'],
+                                             rentTime=rent_data['time'],
+                                             rentHours=rent_data['hours'],
+                                             comment=order['description'])
+
             for filter in filters:
                 if filter['value'] != '':
                     for v in filter['values']:
-                        if v['value'] == filter['value']:
-                            new_order.filter_value.add(v['id'])
+                        try:
+                            if v['value'] == filter['value']['value']:
+                                new_order.filter_value.add(v['id'])
+                        except:
+                            if v['value'] == filter['value']:
+                                new_order.filter_value.add(v['id'])
                     new_order.filter.add(filter['id'])
+
             allUsers=User.objects.all()
             for user in allUsers:
                 print(user.subscribe_type.all())

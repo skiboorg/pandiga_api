@@ -151,7 +151,7 @@ class UserNewPayment(APIView):
             },
             "confirmation": {
                 "type": "redirect",
-                "return_url": f'{settings.HOST}/lk/balance?pay_id={pay_id}'
+                "return_url": f'{settings.HOST}/profile/balance?pay_id={pay_id}'
             },
             "capture": True,
             "description": f'Пополнение баланса пользователя ID {request.user.id}. {request.user.get_full_name()}'
@@ -215,6 +215,7 @@ class UserCheckPayment(APIView):
         print(paymentObj)
         if not paymentObj.is_payed:
             payment = Payment.find_one(paymentObj.pay_id)
+            print(payment)
             if payment.status == 'succeeded':
                 paymentObj.is_payed = True
                 paymentObj.status = 'Оплачен'
@@ -240,7 +241,9 @@ class UserCheckPayment(APIView):
 
 class GetAllPayments(generics.ListAPIView):
     serializer_class = PaymentsSerializer
+
     def get_queryset(self):
+        print('request.query_params.get', self.request.query_params.get('user_id'))
         return PaymentObj.objects.filter(user=self.request.query_params.get('user_id')).order_by('-created_at')
 
 

@@ -9,6 +9,7 @@ urlpatterns = [
     path('get_other_count/', views.NotificationGetOtherCount.as_view()),
     path('get_all/', views.NotificationGetAll.as_view()),
     path('set_read/', views.NotificationSetRead.as_view()),
+    path('delete/', views.NotificationDelete.as_view()),
 
 
 

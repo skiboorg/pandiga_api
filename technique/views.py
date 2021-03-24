@@ -43,17 +43,58 @@ class TechniqueUnitAddFeedback(APIView):
         order.save()
         return Response(status=201)
 
+class TechniqueUnitDelete(APIView):
+    def post(self, request):
+        unit_id = request.data.get('unit_id')
+        unit = TechniqueUnit.objects.get(id=unit_id)
+        unit.delete()
+        return Response(status=200)
+
+class TechniqueUnitEdit(APIView):
+    def post(self, request):
+
+        unit = TechniqueUnit.objects.get(id=request.data.get('unit_id'))
+        unit_data = json.loads(request.data['unit'])
+        city_data = json.loads(request.data.get('city'))
+        filters_data = json.loads(request.data['filters'])
+        print(city_data)
+        unit.name = unit_data['name']
+        unit.year = unit_data['year']
+        unit.min_rent_time = unit_data['min_rent_time']
+        unit.rent_type = unit_data['rent_type']
+        unit.rent_price = unit_data['rent_price']
+        unit.description = unit_data['description']
+        if city_data:
+            unit.city_id = city_data['id']
+            unit.coords = unit_data['coords']
+        unit.save()
+
+        unit.filter_value.clear()
+
+        for filter in filters_data:
+            if filter['value'] != '':
+                print(filter['value'])
+                for v in filter['values']:
+                    try:
+                        if v['value'] == filter['value']['value']:
+                            unit.filter_value.add(v['id'])
+                    except:
+                        if v['value'] == filter['value']:
+                            unit.filter_value.add(v['id'])
+                unit.filter.add(filter['id'])
+
+
+
+        return Response(status=200)
 class TechniqueUnitAdd(APIView):
     def post(self,request):
         print(request.data)
         print(request.FILES)
         unit_data = json.loads(request.data['unit'])
         filters_data = json.loads(request.data['filters'])
-        images_data = request.data['images']
 
-        print(images_data)
 
-        type = TechniqueType.objects.get(name_slug=unit_data['selectedType'])
+        type = TechniqueType.objects.get(name_slug=unit_data['selectedType']['name_slug'])
 
         unit = TechniqueUnit.objects.create(type=type,
                                      owner=request.user,
@@ -63,15 +104,20 @@ class TechniqueUnitAdd(APIView):
                                      rent_type=unit_data['rent_type'],
                                      rent_price=unit_data['rent_price'],
                                      description=unit_data['description'],
-                                            city_id=unit_data['city_id'],
+                                            city_id=unit_data['city']['id'],
                                             coords=unit_data['coords'],
         )
+
 
         for filter in filters_data:
             if filter['value'] != '':
                 for v in filter['values']:
-                    if v['value'] == filter['value']:
-                        unit.filter_value.add(v['id'])
+                    try:
+                        if v['value'] == filter['value']['value']:
+                            unit.filter_value.add(v['id'])
+                    except:
+                        if v['value'] == filter['value']:
+                            unit.filter_value.add(v['id'])
                 unit.filter.add(filter['id'])
 
         for f in request.FILES.getlist('images'):
@@ -114,7 +160,7 @@ class TechniqueUnitListView(APIView):
 
 class TechniqueUserUnitsListView(generics.ListAPIView):
     """Вывод едениц техники юзера"""
-    serializer_class = TechniqueUnitSerializer
+    serializer_class = UserTechniqueUnitSerializer
     def get_queryset(self):
         return TechniqueUnit.objects.filter(owner=self.request.query_params.get('user_id'))
 
@@ -138,6 +184,12 @@ class TechniqueUnitDetailView(generics.RetrieveAPIView):
     """Вывод деталей еденицы техники по slug name"""
     serializer_class = TechniqueUnitDetalSerializer
     lookup_field = 'name_slug'
+    queryset = TechniqueUnit.objects.filter()
+
+class TechniqueUnitEditView(generics.RetrieveAPIView):
+    """Вывод деталей еденицы техники по slug name"""
+    serializer_class = TechniqueUnitDetalSerializer
+    lookup_field = 'uuid'
     queryset = TechniqueUnit.objects.filter()
 
 
