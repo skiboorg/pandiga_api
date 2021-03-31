@@ -7,8 +7,7 @@ from order.models import Order
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from twilio.rest import Client
-from .services import create_random_string
+from .services import send_sms
 from .serializers import *
 from .models import *
 from rest_framework import generics
@@ -112,25 +111,11 @@ class getUserEmailbyPhone(APIView):
 
 class sendSMS(APIView):
     def post(self,request):
-        account_sid = settings.TWILLO_ACCOUNT_SID
-        auth_token = settings.TWILLO_AUTH_TOKEN
-        client = Client(account_sid, auth_token)
-        sms_number = create_random_string(digits=True,num=4)
-        # messageSend = False
-        messageSend = True
-        try:
-            message = client.messages.create(
-                to=request.data['phone'],
-                from_="test",
-                body=f'PANDIGA. Код подтверждения: {sms_number}')
-            print('message.sid=', message.sid)
-            messageSend = True
-        except:
-            messageSend = False
-        if messageSend:
-            return Response({'result': True, 'code': sms_number})
-        else:
-            return Response({'result': False, 'code': sms_number})
+        phone = request.data.get('phone')
+        result = send_sms(phone, 'Код подтверждения')
+        return Response(result, status=200)
+
+
 
 class UserNewPayment(APIView):
     def post(self,request):
@@ -269,23 +254,14 @@ class UserRecoverPassword(APIView):
         except:
             user = None
         if user:
-            account_sid = settings.TWILLO_ACCOUNT_SID
-            auth_token = settings.TWILLO_AUTH_TOKEN
-            client = Client(account_sid, auth_token)
-            sms_number = create_random_string(digits=True, num=8)
-            # messageSend = False
-            messageSend = True
-            try:
-                message = client.messages.create(
-                    to=request.data['phone'],
-                    from_="test",
-                    body=f'PANDIGA. Ваш новый пароль: {sms_number}')
-                user.set_password(sms_number)
-                user.save()
+            phone = request.data.get('phone')
+            password = create_random_string(digits=True, num=8)
 
-                messageSend = True
-            except:
-                messageSend = False
+            user.set_password(password)
+            user.save()
+
+            send_sms(phone, 'Ваш новый пароль', password)
+
             return Response({'result': True, 'email': user.email}, status=200)
         else:
             return Response({'result': False}, status=200)

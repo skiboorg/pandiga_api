@@ -3,10 +3,12 @@ from django.contrib.auth.password_validation import validate_password
 from django.core import exceptions as django_exceptions
 from django.db import IntegrityError, transaction
 from rest_framework import exceptions, serializers
-from djoser.conf import settings
+
 from city.serializers import CitySerializer
 from .models import *
 from settings import MAIN_DOMAIN
+from djoser.conf import settings
+
 # User = get_user_model()
 
 
