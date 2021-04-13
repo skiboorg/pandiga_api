@@ -71,7 +71,7 @@ class ChatAdd(APIView):
                                                 {"type": "chat.message", 'message': message.data})
         for user in chat.users.all():
             if user!= request.user:
-                createNotification('chat', user, 'Новое сообщение в чате', '/lk/chats',chat_id=chat.id)
+                createNotification('chat', user, 'Новое сообщение в чате', '/profile/chats',chat_id=chat.id)
 
 
         return Response(status=201)
@@ -93,7 +93,7 @@ class ChatNewMessage(APIView):
         print(request.data)
         msg_to = User.objects.get(id=owner_id)
         print(msg_to)
-        createNotification('chat', msg_to, 'Новое сообщение в чате', '/lk/chats',chat_id=chat.id)
+        createNotification('chat', msg_to, 'Новое сообщение в чате', '/profile/chats',chat_id=chat.id)
         # async_to_sync(channel_layer.send)(msg_to.channel, {"type": "user.notify"})
         if request.data['isRentMessage']:
             Message.objects.create(chat=chat,

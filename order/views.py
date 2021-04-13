@@ -134,7 +134,7 @@ class OrderApply(APIView):
         order = Order.objects.get(id=request_data['order_id'])
         order.apply_units.add(request_data['unit_id'])
         createNotification('order', order.owner, f'На заявку №{order.id} поступило предложение техники',
-                           f'/lk/orders/{order.name_slug}')
+                           f'/profile/orders/{order.name_slug}')
 
         return  Response(status=201)
 
@@ -146,7 +146,7 @@ class OrderClose(APIView):
         order.save()
         createNotification('order', order.worker, f'Заказчик завершил выполнение заявки №{order.id}.'
                                                   f' Вы можете оставить отзыв',
-                           f'/lk/apply/{order.name_slug}')
+                           f'/profile/apply/{order.name_slug}')
 
         return Response(status=200)
 
