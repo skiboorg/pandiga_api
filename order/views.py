@@ -42,8 +42,14 @@ class OrdersSubscribe(APIView):
 class OrderGet(generics.RetrieveAPIView):
     print('queryset')
     serializer_class = OrdersSerializer
-    lookup_field = 'name_slug'
-    queryset = Order.objects.filter()
+    # lookup_field = 'name_slug'
+    # queryset = Order.objects.filter()
+
+    def get_object(self):
+        order = Order.objects.get(name_slug=self.request.query_params.get('order_slug'))
+        order.views += 1
+        order.save()
+        return order
 
 class OrderLkGet(generics.RetrieveAPIView):
     serializer_class = OrderSerializer
@@ -113,7 +119,7 @@ class OrderApplyAccept(APIView):
         order.apply_units.clear()
         unit.save()
         order.save()
-        createNotification('order',user,f'Вас выбрали исполнителем заявки №{order.id}',f'/lk/apply/{order.name_slug}')
+        createNotification('order',user,f'Вас выбрали исполнителем заявки №{order.id}',f'/profile/applies/{order.name_slug}')
         return Response(status=201)
 
 
@@ -146,7 +152,7 @@ class OrderClose(APIView):
         order.save()
         createNotification('order', order.worker, f'Заказчик завершил выполнение заявки №{order.id}.'
                                                   f' Вы можете оставить отзыв',
-                           f'/profile/apply/{order.name_slug}')
+                           f'/profile/applies/{order.name_slug}')
 
         return Response(status=200)
 

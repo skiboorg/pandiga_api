@@ -15,7 +15,8 @@ urlpatterns = [
     path('get_user_orders_applyed/', views.UserOrdersApplyedGet.as_view()),
     path('get_user_orders_accepted/', views.UserOrdersAcceptedGet.as_view()),
 
-    path('get_order/<str:name_slug>', views.OrderGet.as_view()),
+    # path('get_order/<str:name_slug>', views.OrderGet.as_view()),
+    path('get_order', views.OrderGet.as_view()),
     path('get_lk_order/<str:name_slug>', views.OrderLkGet.as_view()),
     path('subscribe', views.OrdersSubscribe.as_view()),
 
