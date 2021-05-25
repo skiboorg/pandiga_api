@@ -288,20 +288,39 @@ class SendTestMail(APIView):
         return Response({'result':'ok'})
 
 
-class BflQuiz(APIView):
+class LQuiz(APIView):
     def post(self,request):
-        msg = ''
-        title = ''
-        if request.data.get("type") == 'callBack':
-            msg = f'Телефон :{request.data.get("phone")}'
-            title = 'Форма обратной связи (БФЛ)'
-        if request.data.get("type") == 'quiz':
-            msg = f'Телефон :{request.data.get("phone")} | Ответы : {request.data.get("quiz")}'
-            title = 'Форма квиза (БФЛ)'
-        mail = EmailMessage(title, msg, 'd@skib.org', ('d@skib.org',))
 
-        mail.send()
+        quiz = request.POST.get('quiz')
+        utm = request.POST.get('utm')
+        mail_to = request.POST.get('mail_to')
+
+        type = json.loads(quiz)[::-1][0]['answer'][0]['type']
+        phone = f'+7(9{json.loads(quiz)[::-1][0]["answer"][0]["phone"]}'
+        msg_html = render_to_string('l_quiz.html', {'quiz': json.loads(quiz),
+                                                    'type': type,
+                                                    'phone': phone,
+                                                    'utm': utm,
+                                                    })
+        send_mail('Заполнен квиз на сайте proflestnicy', None, 'info@pandiga.ru', [mail_to],
+                  fail_silently=False, html_message=msg_html)
+
         return Response({'result':'ok'})
+
+class LForm(APIView):
+    def post(self,request):
+        name = request.POST.get('name')
+        phone = f'+7(9{request.POST.get("phone")}'
+        utm = request.POST.get('utm')
+        mail_to = request.POST.get('mail_to')
+        msg_html = render_to_string('l_form.html', {'name': name,
+                                                           'phone': phone,
+                                                           'utm': utm,
+                                                          })
+        send_mail('Заполнена форма на сайте proflestnicy', None, 'info@pandiga.ru', [mail_to],
+                   fail_silently=False, html_message=msg_html)
+        return Response({'result':'ok'})
+
 
 class LandingAstra(APIView):
     def post(self,request):
