@@ -144,11 +144,11 @@ class UserNewPayment(APIView):
 
         pt = PaymentType.objects.get(method=payment_type)
         PaymentObj.objects.create(user=request.user,
-                               pay_id=payment.id,
-                               pay_code=pay_id,
-                               amount=int(amount),
-                               type=pt,
-                               status='Не оплачен')
+                                  pay_id=payment.id,
+                                  pay_code=pay_id,
+                                  amount=int(amount),
+                                  type=pt,
+                                  status='Не оплачен')
 
         return Response(payment.confirmation.confirmation_url)
 
@@ -292,7 +292,10 @@ class LQuiz(APIView):
     def post(self,request):
 
         quiz = request.POST.get('quiz')
-        utm = request.POST.get('utm')
+        utm_source = request.POST.get('utm_source')
+        utm_medium = request.POST.get('utm_medium')
+        utm_term = request.POST.get('utm_term')
+        utm_campaign = request.POST.get('utm_campaign')
         mail_to = request.POST.get('mail_to')
 
         type = json.loads(quiz)[::-1][0]['answer'][0]['type']
@@ -300,7 +303,10 @@ class LQuiz(APIView):
         msg_html = render_to_string('l_quiz.html', {'quiz': json.loads(quiz),
                                                     'type': type,
                                                     'phone': phone,
-                                                    'utm': utm,
+                                                    'utm_source': utm_source,
+                                                    'utm_medium': utm_medium,
+                                                    'utm_term': utm_term,
+                                                    'utm_campaign': utm_campaign,
                                                     })
         send_mail('Заполнен квиз на сайте proflestnicy', None, 'info@pandiga.ru', [mail_to],
                   fail_silently=False, html_message=msg_html)
@@ -311,14 +317,20 @@ class LForm(APIView):
     def post(self,request):
         name = request.POST.get('name')
         phone = f'+7(9{request.POST.get("phone")}'
-        utm = request.POST.get('utm')
+        utm_source = request.POST.get('utm_source')
+        utm_medium = request.POST.get('utm_medium')
+        utm_term = request.POST.get('utm_term')
+        utm_campaign = request.POST.get('utm_campaign')
         mail_to = request.POST.get('mail_to')
         msg_html = render_to_string('l_form.html', {'name': name,
-                                                           'phone': phone,
-                                                           'utm': utm,
-                                                          })
+                                                    'phone': phone,
+                                                    'utm_source': utm_source,
+                                                    'utm_medium': utm_medium,
+                                                    'utm_term': utm_term,
+                                                    'utm_campaign': utm_campaign,
+                                                    })
         send_mail('Заполнена форма на сайте proflestnicy', None, 'info@pandiga.ru', [mail_to],
-                   fail_silently=False, html_message=msg_html)
+                  fail_silently=False, html_message=msg_html)
         return Response({'result':'ok'})
 
 
@@ -355,8 +367,8 @@ class LandingTest(APIView):
     def post(self,request):
         print(request.data)
         msg_html = render_to_string('test.html', {'name': request.data.get('name'),
-                                                          'email': request.data.get('email'),
-                                                          'phone': request.data.get('phone')}
+                                                  'email': request.data.get('email'),
+                                                  'phone': request.data.get('phone')}
                                     )
         send_mail('Заполнена форма', None, 'info@pandiga.ru', ('dimon.skiborg@gmail.com',),
                   fail_silently=False, html_message=msg_html)
