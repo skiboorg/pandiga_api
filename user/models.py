@@ -73,7 +73,7 @@ class User(AbstractUser):
     is_phone_verified = models.BooleanField('Телефон подтвержден?', default=False)
     is_email_verified = models.BooleanField('EMail подтвержден?', default=False)
     verify_code = models.CharField('Код подтверждения', max_length=50, blank=True, null=True)
-    notification_id = models.CharField('ID для сообщений', max_length=100, blank=True, null=True, unique=True)
+    notification_id = models.CharField('ID для сообщений', max_length=255, blank=True, null=True, unique=True)
     channel = models.CharField(max_length=255,blank=True,null=True)
 
     USERNAME_FIELD = 'email'

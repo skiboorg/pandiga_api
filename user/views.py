@@ -56,6 +56,16 @@ class FavAdd(APIView):
         return Response(status=200)
 
 
+class UserUpdateNotificationID(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        print(request.data)
+        user.notification_id = request.data['token']
+        user.save()
+        return Response(status=200)
+
 class UserUpdate(APIView):
     permission_classes = [IsAuthenticated]
 
