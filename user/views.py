@@ -307,7 +307,7 @@ class LQuiz(APIView):
 
         msg_html = render_to_string('l_quiz.html', {'quiz': quiz,
                                                     })
-        send_mail('Заполнен квиз на сайте', None, 'info@pandiga.ru', ['dimon.skiborg@gmail.com'],
+        send_mail('Заполнен квиз на сайте', None, 'info@pandiga.ru', ['igor@astrapromo.ru'],
                   fail_silently=False, html_message=msg_html)
 
         return Response({'result':'ok'})
@@ -320,7 +320,7 @@ class LForm(APIView):
         msg_html = render_to_string('l_form.html', {
                                                     'phone': phone,
                                                     })
-        send_mail('Заполнена форма на сайте', None, 'info@pandiga.ru', ['dimon.skiborg@gmail.com'],
+        send_mail('Заполнена форма на сайте', None, 'info@pandiga.ru', ['igor@astrapromo.ru'],
                   fail_silently=False, html_message=msg_html)
         return Response({'result':'ok'})
 
