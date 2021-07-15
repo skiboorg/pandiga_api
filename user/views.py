@@ -300,46 +300,27 @@ class SendTestMail(APIView):
 
 class LQuiz(APIView):
     def post(self,request):
+        print(request.data)
 
-        quiz = request.POST.get('quiz')
-        utm_source = request.POST.get('utm_source')
-        utm_medium = request.POST.get('utm_medium')
-        utm_term = request.POST.get('utm_term')
-        utm_campaign = request.POST.get('utm_campaign')
-        mail_to = request.POST.get('mail_to')
+        quiz = request.data.get('data')
 
-        type = json.loads(quiz)[::-1][0]['answer'][0]['type']
-        phone = f'+7(9{json.loads(quiz)[::-1][0]["answer"][0]["phone"]}'
-        msg_html = render_to_string('l_quiz.html', {'quiz': json.loads(quiz),
-                                                    'type': type,
-                                                    'phone': phone,
-                                                    'utm_source': utm_source,
-                                                    'utm_medium': utm_medium,
-                                                    'utm_term': utm_term,
-                                                    'utm_campaign': utm_campaign,
+
+        msg_html = render_to_string('l_quiz.html', {'quiz': quiz,
                                                     })
-        send_mail('Заполнен квиз на сайте proflestnicy', None, 'info@pandiga.ru', [mail_to],
+        send_mail('Заполнен квиз на сайте', None, 'info@pandiga.ru', ['dimon.skiborg@gmail.com'],
                   fail_silently=False, html_message=msg_html)
 
         return Response({'result':'ok'})
 
 class LForm(APIView):
     def post(self,request):
-        name = request.POST.get('name')
-        phone = f'+7(9{request.POST.get("phone")}'
-        utm_source = request.POST.get('utm_source')
-        utm_medium = request.POST.get('utm_medium')
-        utm_term = request.POST.get('utm_term')
-        utm_campaign = request.POST.get('utm_campaign')
-        mail_to = request.POST.get('mail_to')
-        msg_html = render_to_string('l_form.html', {'name': name,
+
+        data = request.data
+        phone = data.get("phone")
+        msg_html = render_to_string('l_form.html', {
                                                     'phone': phone,
-                                                    'utm_source': utm_source,
-                                                    'utm_medium': utm_medium,
-                                                    'utm_term': utm_term,
-                                                    'utm_campaign': utm_campaign,
                                                     })
-        send_mail('Заполнена форма на сайте proflestnicy', None, 'info@pandiga.ru', [mail_to],
+        send_mail('Заполнена форма на сайте', None, 'info@pandiga.ru', ['dimon.skiborg@gmail.com'],
                   fail_silently=False, html_message=msg_html)
         return Response({'result':'ok'})
 
