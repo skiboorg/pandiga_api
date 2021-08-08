@@ -278,20 +278,24 @@ class UserRecoverPassword(APIView):
 
 class SendTestMail(APIView):
     def post(self,request):
-        print(request.data)
-        msg = ''
-        title = ''
-        if request.data.get("type") == 'callBack':
-            msg = f'Телефон :{request.data.get("phone")}'
-            title = 'Форма обратной связи (кухни)'
-        if request.data.get("type") == 'quiz':
-            msg = f'Телефон :{request.data.get("phone")} | Ответы : {request.data.get("quiz")}'
-            title = 'Форма квиза (кухни)'
+        print(request.FILES)
+
+        title=''
 
         file = None
+        msg = f'Имя :{request.data.get("name")}\n'\
+              f'Телефон:{request.data.get("phone")}\n' \
+              f'Email :{request.data.get("email")}\n' \
+              f'Комментарий :{request.data.get("comment")}' \
+
+        if request.data.get("type") == 'f':
+            title= 'Форма с сайта'
+        else:
+            title = 'Резюме с сайта'
+
         if request.FILES.get('file'):
             file = request.FILES.get('file')
-        mail = EmailMessage(title, msg, 'd@skib.org', ('d@skib.org',))
+        mail = EmailMessage(title, msg, 'info@pandiga.ru', ('dimon.skiborg@gmail.com','Malkon.zakaz@yandex.ru'))
         if file:
             mail.attach(file.name, file.read(), file.content_type)
         mail.send()
