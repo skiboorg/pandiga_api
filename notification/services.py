@@ -20,7 +20,8 @@ def createNotification(type,user,text,url,chat_id=0):
         async_to_sync(channel_layer.send)(user.channel, {"type": "user.notify",
                                                          'event':type,
                                                          'message':text,
-                                                         'url':url})
+                                                         'url':url,
+                                                         'chat_id':chat_id})
         msg_html = render_to_string('notification.html', {'message': text,
                                                           'event': type})
         send_mail('Новое оповещение Pandiga ', None, 'info@pandiga.ru', [user.email],
@@ -34,12 +35,17 @@ def createNotification(type,user,text,url,chat_id=0):
         push_service = FCMNotification(api_key=settings.FCM_API_KEY)
 
         registration_id = user.notification_id
-        message_title = type
+        message_title = 'Оповещение'
         message_body = text
 
-        data_message = {
-            "url": url
-        }
+        if type == 'chat':
+            data_message = {
+                "url": f'/profile/chat/{chat_id}'
+            }
+        else:
+            data_message = {
+                "url": url
+            }
 
         result = push_service.notify_single_device(registration_id=registration_id,
                                                    sound='Default',

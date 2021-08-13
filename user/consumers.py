@@ -62,10 +62,12 @@ class UserOnline(AsyncWebsocketConsumer):
         message = event['message']
         type = event['event']
         url = event['url']
+        chat_id = event['chat_id']
         await self.send(text_data=json.dumps({
              'event': type,
              'message': message,
              'url': url,
+             'chat_id': chat_id,
 
          }))
     # async def chat_message(self, event):
