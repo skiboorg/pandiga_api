@@ -24,6 +24,7 @@ urlpatterns = [
     path('check_payment/', views.UserCheckPayment.as_view()),
     path('recover_password', views.UserRecoverPassword.as_view()),
     path('bonuses_to_money', views.BonusesToMoney.as_view()),
+    path('send_link', views.SendLink.as_view()),
 
 
     path('mail/send_test', views.SendTestMail.as_view()),

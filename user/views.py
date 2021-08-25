@@ -247,6 +247,17 @@ class GetAllPaymentsTypes(generics.ListAPIView):
     serializer_class = PaymentsTypesSerializer
 
 
+class SendLink(APIView):
+    def post(self, request):
+        #https://play.google.com/store/apps/details?id=ru.pandiga.app
+        # text = ''
+        # if request.data.get('device')=='android':
+        text = 'https://play.google.com/store/apps/details?id=ru.pandiga.app'
+        send_sms(request.data.get('phone'),'',text)
+        print(request.data)
+        return Response(status=200)
+
+
 class BonusesToMoney(APIView):
     def post(self, request):
         amount = request.data.get('amount')
