@@ -29,6 +29,7 @@ urlpatterns = [
 
     path('mail/send_test', views.SendTestMail.as_view()),
     path('mail/l_quiz', views.LQuiz.as_view()),
+    path('mail/igor_quiz', views.IgorQuiz.as_view()),
     path('mail/l_form', views.LForm.as_view()),
     path('mail/land', views.LandingMail.as_view()),
     path('mail/astra', views.LandingAstra.as_view()),

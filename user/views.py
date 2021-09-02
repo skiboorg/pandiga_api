@@ -313,6 +313,21 @@ class SendTestMail(APIView):
         return Response({'result':'ok'})
 
 
+class IgorQuiz(APIView):
+    def post(self,request):
+        print(request.data)
+        quiz = request.data.get('data')
+        url = request.data.get('url')
+
+        msg_html = render_to_string('igor_quiz.html', {
+                                                    'quiz': quiz,
+                                                    'url': url,
+                                                    })
+        send_mail('Заполнен квиз на сайте', None, 'info@pandiga.ru', ['dimon.skiborg@gmail.com'],
+                  fail_silently=False, html_message=msg_html)
+
+        return Response({'result': 'ok'})
+
 class LQuiz(APIView):
     def post(self,request):
         print(request.data)
