@@ -11,7 +11,7 @@ from .services import send_sms
 from .serializers import *
 from .models import *
 from rest_framework import generics
-from yandex_checkout import Configuration, Payment
+from yookassa import Configuration, Payment
 from technique.serializers import TechniqueUnitSerializer
 import settings
 from django.core.mail import send_mail,EmailMessage
@@ -20,7 +20,8 @@ from django.core.mail import send_mail,EmailMessage
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-
+Configuration.account_id = settings.YA_SHOP
+Configuration.secret_key = settings.YA_KEY
 
 class UserAddFeedback(APIView):
     def post(self,request):
@@ -71,17 +72,22 @@ class UserUpdate(APIView):
 
     def post(self, request):
         user = request.user
-        print(json.loads(request.data['userData']))
-        print(request.FILES)
+        #print(json.loads(request.data['userData']))
+        data = json.loads(request.data['userData'])
+
         serializer = UserSerializer(user, data=json.loads(request.data['userData']))
         if serializer.is_valid():
             serializer.save()
             for f in request.FILES.getlist('avatar'):
                 user.avatar = f
                 user.save(force_update=True)
+            if data.get('password'):
+                print(data.get('password'))
+                user.set_password(data.get('password'))
+                user.save(force_update=True)
             return Response(status=200)
         else:
-            print(serializer.errors)
+            #print(serializer.errors)
             return Response(status=400)
 
 class GetUserFeedbacks(generics.ListAPIView):
@@ -122,7 +128,7 @@ class getUserEmailbyPhone(APIView):
 class sendSMS(APIView):
     def post(self,request):
         phone = request.data.get('phone')
-        result = send_sms(phone, 'Код подтверждения')
+        result = send_sms(phone)
         return Response(result, status=200)
 
 
@@ -131,37 +137,36 @@ class UserNewPayment(APIView):
     def post(self,request):
         print(request.data)
         amount = request.data.get('amount')
-        payment_type = request.data.get('pay_type')
 
-        Configuration.account_id = settings.YA_SHOP_ID
-        Configuration.secret_key = settings.YA_API
         pay_id = uuid.uuid4()
         payment = Payment.create({
             "amount": {
                 "value": amount,
                 "currency": "RUB"
             },
-            "payment_method": {
-                "type": payment_type,
-            },
             "confirmation": {
                 "type": "redirect",
-                "return_url": f'{settings.HOST}/profile/balance?pay_id={pay_id}'
+                "return_url": f'{settings.HOST}/profile/balance'
             },
             "capture": True,
             "description": f'Пополнение баланса пользователя ID {request.user.id}. {request.user.get_full_name()}'
-        }, pay_id)
+        }, uuid.uuid4())
 
-        pt = PaymentType.objects.get(method=payment_type)
-        PaymentObj.objects.create(user=request.user,
-                                  pay_id=payment.id,
-                                  pay_code=pay_id,
-                                  amount=int(amount),
-                                  type=pt,
-                                  status='Не оплачен')
+        response = json.loads(payment.json())
 
-        return Response(payment.confirmation.confirmation_url)
+        if response.get('type') == 'error':
+            result = {"success":False, "message": response.get('description')}
+        else:
 
+            PaymentObj.objects.create(user=request.user,
+                                      pay_id=response.get('id'),
+                                      pay_code=pay_id,
+                                      amount=int(amount),
+                                      status='Не оплачен')
+
+            result = {"success": True, "message": response.get('confirmation')}
+
+        return Response(result, status=200)
 
 # class GetRefferalsMoney(generics.ListAPIView):
 #     serializer_class = RefferalsMoneySerializer
@@ -199,6 +204,87 @@ class NewPartner(APIView):
             return Response({'status':False},status=200)
 
 
+
+
+
+class GetAllPayments(generics.ListAPIView):
+    serializer_class = PaymentsSerializer
+
+    def get_queryset(self):
+        print('request.query_params.get', self.request.query_params.get('user_id'))
+        return PaymentObj.objects.filter(user=self.request.query_params.get('user_id')).order_by('-created_at')
+
+
+class GetAllPaymentsTypes(generics.ListAPIView):
+    queryset = PaymentType.objects.filter()
+    serializer_class = PaymentsTypesSerializer
+
+
+class SendLink(APIView):
+    def post(self, request):
+        #https://play.google.com/store/apps/details?id=ru.pandiga.app
+        # text = ''
+        # if request.data.get('device')=='android':
+        text = 'https://play.google.com/store/apps/details?id=ru.pandiga.app'
+        send_sms(request.data.get('phone'),'')
+        print(request.data)
+        return Response(status=200)
+
+
+class BonusesToMoney(APIView):
+    def post(self, request):
+        amount = request.data.get('amount')
+        request.user.partner_balance -= amount
+        request.user.balance += amount
+        request.user.save()
+        return Response( status=200)
+
+
+class UserRecoverPassword(APIView):
+    def post(self,request):
+        user = None
+        try:
+            user = User.objects.get(phone=request.data['phone'])
+        except:
+            user = None
+        if user:
+            phone = request.data.get('phone')
+            password = create_random_string(digits=True, num=3)
+
+            user.set_password(password)
+            user.save()
+            print('password',password)
+            send_sms(phone, text=password)
+
+            return Response({'result': True, 'email': user.email}, status=200)
+        else:
+            return Response({'result': False}, status=200)
+
+
+
+class YooHook(APIView):
+    def post(self, request):
+        status = request.data['object']['status']
+        if status == 'succeeded':
+            payment = PaymentObj.objects.get(pay_id=request.data['object']['id'])
+            if not payment.is_payed:
+                payment.status = 'Оплачен'
+                payment.is_payed = True
+                payment.save()
+                payment.user.balance += payment.amount
+                payment.user.save(force_update=True)
+
+                all_refferals = Refferal.objects.filter(refferal=payment.user)
+
+                if all_refferals.exists():
+                    for reffreal in all_refferals:
+                        reffreal.master.partner_balance += int(payment.amount * 10 / 100)
+                        reffreal.master.save()
+                        reffreal.earned += int(payment.amount * 10 / 100)
+                        reffreal.save()
+
+        return Response(status=200)
+
 class UserCheckPayment(APIView):
     def post(self, request):
         print(request.data)
@@ -231,166 +317,4 @@ class UserCheckPayment(APIView):
                     reffreal.save()
 
 
-        return Response(status=200)
-
-
-class GetAllPayments(generics.ListAPIView):
-    serializer_class = PaymentsSerializer
-
-    def get_queryset(self):
-        print('request.query_params.get', self.request.query_params.get('user_id'))
-        return PaymentObj.objects.filter(user=self.request.query_params.get('user_id')).order_by('-created_at')
-
-
-class GetAllPaymentsTypes(generics.ListAPIView):
-    queryset = PaymentType.objects.filter()
-    serializer_class = PaymentsTypesSerializer
-
-
-class SendLink(APIView):
-    def post(self, request):
-        #https://play.google.com/store/apps/details?id=ru.pandiga.app
-        # text = ''
-        # if request.data.get('device')=='android':
-        text = 'https://play.google.com/store/apps/details?id=ru.pandiga.app'
-        send_sms(request.data.get('phone'),'',text)
-        print(request.data)
-        return Response(status=200)
-
-
-class BonusesToMoney(APIView):
-    def post(self, request):
-        amount = request.data.get('amount')
-        request.user.partner_balance -= amount
-        request.user.balance += amount
-        request.user.save()
-        return Response( status=200)
-
-
-class UserRecoverPassword(APIView):
-    def post(self,request):
-        user = None
-        try:
-            user = User.objects.get(phone=request.data['phone'])
-        except:
-            user = None
-        if user:
-            phone = request.data.get('phone')
-            password = create_random_string(digits=True, num=8)
-
-            user.set_password(password)
-            user.save()
-
-            send_sms(phone, 'Ваш новый пароль', password)
-
-            return Response({'result': True, 'email': user.email}, status=200)
-        else:
-            return Response({'result': False}, status=200)
-
-class SendTestMail(APIView):
-    def post(self,request):
-        print(request.FILES)
-
-        title=''
-
-        file = None
-        msg = f'Имя :{request.data.get("name")}\n'\
-              f'Телефон:{request.data.get("phone")}\n' \
-              f'Email :{request.data.get("email")}\n' \
-              f'Комментарий :{request.data.get("comment")}' \
-
-        if request.data.get("type") == 'f':
-            title= 'Форма с сайта'
-        else:
-            title = 'Резюме с сайта'
-
-        if request.FILES.get('file'):
-            file = request.FILES.get('file')
-        mail = EmailMessage(title, msg, 'info@pandiga.ru', ('dimon.skiborg@gmail.com','Malkon.zakaz@yandex.ru'))
-        if file:
-            mail.attach(file.name, file.read(), file.content_type)
-        mail.send()
-        return Response({'result':'ok'})
-
-
-class IgorQuiz(APIView):
-    def post(self,request):
-        print(request.data)
-        quiz = request.data.get('data')
-        url = request.data.get('url')
-
-        msg_html = render_to_string('igor_quiz.html', {
-                                                    'quiz': quiz,
-                                                    'url': url,
-                                                    })
-        send_mail('Заполнен квиз на сайте', None, 'info@pandiga.ru', ['dimon.skiborg@gmail.com'],
-                  fail_silently=False, html_message=msg_html)
-
-        return Response({'result': 'ok'})
-
-class LQuiz(APIView):
-    def post(self,request):
-        print(request.data)
-
-        quiz = request.data.get('data')
-
-
-        msg_html = render_to_string('l_quiz.html', {'quiz': quiz,
-                                                    })
-        send_mail('Заполнен квиз на сайте', None, 'info@pandiga.ru', ['igor@astrapromo.ru'],
-                  fail_silently=False, html_message=msg_html)
-
-        return Response({'result':'ok'})
-
-class LForm(APIView):
-    def post(self,request):
-
-        data = request.data
-        phone = data.get("phone")
-        msg_html = render_to_string('l_form.html', {
-                                                    'phone': phone,
-                                                    })
-        send_mail('Заполнена форма на сайте', None, 'info@pandiga.ru', ['igor@astrapromo.ru'],
-                  fail_silently=False, html_message=msg_html)
-        return Response({'result':'ok'})
-
-
-class LandingAstra(APIView):
-    def post(self,request):
-        msg = ''
-        title = ''
-        if request.data.get("type") == 'callBack':
-            msg = f'Телефон :{request.data.get("phone")} | Имя :{request.data.get("name")}'
-            title = 'Форма обратной связи (АСТРА)'
-        if request.data.get("type") == 'quiz':
-            msg = f'Телефон :{request.data.get("phone")} | Имя :{request.data.get("name")} | Ответы : {request.data.get("quiz")}'
-            title = 'Форма квиза (АСТРА)'
-        mail = EmailMessage(title, msg, 'info@pandiga.ru', ('dimon.skiborg@gmail.com','igor@astrapromo.ru'))
-
-        mail.send()
-        return Response({'result':'ok'})
-
-class LandingMail(APIView):
-    def post(self,request):
-        print(request.data)
-        title = 'Форма обратной связи '
-        msg = f'Email :{request.data.get("email")} | Name :{request.data.get("name")} |' \
-              f' Phone :{request.data.get("phone")} | Сompany :{request.data.get("company")} | ' \
-              f'Manager :{request.data.get("manager")} | Budget :{request.data.get("budget")} |' \
-              f'Message :{request.data.get("message")} '
-        mail = EmailMessage(title, msg, 'info@pandiga.ru', ('greshnik.im@gmail.com',))
-
-        mail.send()
-        return HttpResponseRedirect('/')
-
-
-class LandingTest(APIView):
-    def post(self,request):
-        print(request.data)
-        msg_html = render_to_string('test.html', {'name': request.data.get('name'),
-                                                  'email': request.data.get('email'),
-                                                  'phone': request.data.get('phone')}
-                                    )
-        send_mail('Заполнена форма', None, 'info@pandiga.ru', ('dimon.skiborg@gmail.com',),
-                  fail_silently=False, html_message=msg_html)
         return Response(status=200)

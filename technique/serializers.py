@@ -114,6 +114,7 @@ class UserTechniqueUnitSerializer(serializers.ModelSerializer):
     type = TechniqueTypeSerializer(many=False)
     images = TechniqueUnitImageSerializer(many=True, read_only=True)
     city = serializers.SlugRelatedField(slug_field='city', read_only=True)
+    city_id = serializers.SerializerMethodField()
 
     class Meta:
         model = TechniqueUnit
@@ -125,6 +126,7 @@ class UserTechniqueUnitSerializer(serializers.ModelSerializer):
             'owner',
             'name_slug',
             'city',
+            'city_id',
             'coords',
             'min_rent_time',
             'is_moderated',
@@ -142,6 +144,9 @@ class UserTechniqueUnitSerializer(serializers.ModelSerializer):
             'created_at'
 
         ]
+
+    def get_city_id(self, obj):
+        return obj.city.id
 
 class TechniqueUnitFeedbackSerializer(serializers.ModelSerializer):
     """Список значений фильтров"""

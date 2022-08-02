@@ -23,17 +23,18 @@ def set_user_rating(id,value):
     return
 
 
-def send_sms(phone, msg, text=None):
+def send_sms(phone, text=None):
     print(phone)
     result = {'result': False, 'code': None}
-    code = ''.join(choices(string.digits, k=4))
+    code = ''.join(choices(string.digits, k=3))
     if text:
         text = text
     else:
         text = code
     url = f'https://smsc.ru/sys/send.php?login={settings.SMS_LOGIN}&psw={settings.SMS_PASSWORD}' \
-          f'&phones={phone}&mes=PANDIGA. {msg}: {text}'
+          f'&phones={phone}&mes={text}&call=1'
     response = requests.post(url)
+
     if 'ERROR' not in response.text:
         result = {'result': True, 'code': text}
     return result
