@@ -90,19 +90,33 @@ class OrdersGet(generics.ListAPIView):
     def get_queryset(self):
         type_slug = self.request.query_params.get('type_slug')
         city = self.request.query_params.get('city')
+        print(self.request.user.units.all())
+
+
+        types = []
+        for u in self.request.user.units.all():
+            types.append(u.type.id)
+
+        print(types)
+        print('----')
         if type_slug == 'all':
             orders = Order.objects.filter(is_moderated=True,
                                           is_active=True,
                                           is_finished=False,
+                                          city_id=city,
+                                          type_id__in=types,
                                           worker__isnull=True).order_by('-created_at')
+            for o in orders:
+                print(o.type)
         else:
             orders = Order.objects.filter(type__name_slug=type_slug,
                                           is_moderated=True,
                                           is_finished=False,
                                           is_active=True,
+                                          city_id=city,
                                           worker__isnull=True).order_by('-created_at')
-        if city != '0':
-            orders = orders.filter(city_id=city)
+        # if city != '0':
+        #     orders = orders.filter(city_id=city)
         return orders
 
 
