@@ -104,8 +104,8 @@ class OrdersGet(generics.ListAPIView):
                                           is_active=True,
                                           is_finished=False,
                                           city_id=city,
-                                          type_id__in=types,
-                                          worker__isnull=True).order_by('-created_at')
+                                          type_id__in=types).order_by('-created_at')
+            # worker__isnull = True
             for o in orders:
                 print(o.type)
         else:
@@ -113,8 +113,7 @@ class OrdersGet(generics.ListAPIView):
                                           is_moderated=True,
                                           is_finished=False,
                                           is_active=True,
-                                          city_id=city,
-                                          worker__isnull=True).order_by('-created_at')
+                                          city_id=city).order_by('-created_at')
         # if city != '0':
         #     orders = orders.filter(city_id=city)
         return orders
