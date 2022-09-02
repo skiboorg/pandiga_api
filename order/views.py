@@ -102,7 +102,7 @@ class OrdersGet(generics.ListAPIView):
         if type_slug == 'all':
             orders = Order.objects.filter(is_moderated=True,
                                           is_active=True,
-                                          is_finished=False,
+                                          # is_finished=False,
                                           city_id=city,
                                           type_id__in=types).order_by('-created_at')
             # worker__isnull = True
@@ -111,7 +111,7 @@ class OrdersGet(generics.ListAPIView):
         else:
             orders = Order.objects.filter(type__name_slug=type_slug,
                                           is_moderated=True,
-                                          is_finished=False,
+                                          # is_finished=False,
                                           is_active=True,
                                           city_id=city).order_by('-created_at')
         # if city != '0':
