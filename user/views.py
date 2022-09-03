@@ -153,7 +153,7 @@ class UserNewPayment(APIView):
             "receipt": {
                 "customer": {
                     "full_name": request.user.organization_name if request.user.organization_name else f'{request.user.first_name} {request.user.last_name}',
-                    "phone": request.user.phone
+                    "phone": str(request.user.phone).replace('+','').replace('(','').replace(')','').replace('-','')
                 },
                 "items": [
                     {
