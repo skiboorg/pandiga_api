@@ -148,6 +148,27 @@ class UserNewPayment(APIView):
                 "type": "redirect",
                 "return_url": f'{settings.HOST}/profile/balance'
             },
+            "tax_system_code":2,
+
+            "receipt": {
+                "customer": {
+                    "full_name": request.user.organization_name if request.user.organization_name else f'{request.user.first_name} {request.user.last_name}',
+                    "phone": request.user.phone
+                },
+                "items": [
+                    {
+                        "description": "Пополнение баланса",
+                        "quantity": "1.00",
+                        "amount": {
+                            "value": amount,
+                            "currency": "RUB"
+                        },
+                        "vat_code": "1",
+                        "payment_mode": "full_payment",
+                        "payment_subject": "service"
+                    },
+                ]
+            },
             "capture": True,
             "description": f'Пополнение баланса пользователя ID {request.user.id}. {request.user.get_full_name()}'
         }, uuid.uuid4())
