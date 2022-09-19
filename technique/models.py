@@ -1,7 +1,7 @@
 from django.db import models
 from pytils.translit import slugify
 from django.utils.safestring import mark_safe
-
+from django.db.models.signals import post_save
 from django.core.files import File
 from user.models import User
 from technique.services import *
@@ -225,10 +225,17 @@ class TechniqueUnitFeedback(models.Model):
     value = models.IntegerField('Оценка', blank=True, null=True)
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        if self.text and self.value:
-            set_unit_rating(self.techniqueitem.id,self.value)
-        super(TechniqueUnitFeedback, self).save(*args, **kwargs)
+
+def unit_feedback_post_save(sender, instance, created, **kwargs):
+    if created:
+        unit = instance.techniqueitem
+        unit.rate_times += 1
+        unit.rate_value += instance.value
+        unit.rating = round(unit.rate_value / unit.rate_times)
+        unit.save(update_fields=['rate_times','rate_value','rating'])
+
+post_save.connect(unit_feedback_post_save, sender=TechniqueUnitFeedback)
+
 
 class TechniqueUnitImage(models.Model):
     techniqueitem = models.ForeignKey(TechniqueUnit, blank=False, null=True, on_delete=models.CASCADE,

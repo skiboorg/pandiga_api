@@ -105,6 +105,8 @@ class UserSerializer(serializers.ModelSerializer):
             'inn',
             'ogrn',
             'favorites',
+            'is_ref_code_entered',
+            'used_partner_code',
              # 'units',
 
                   ]

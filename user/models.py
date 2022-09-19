@@ -55,6 +55,7 @@ class User(AbstractUser):
     email = models.EmailField('Эл. почта', blank=True, null=True, unique=True)
     birthday = models.DateField('День рождения', blank=True, null=True)
     partner_code = models.CharField('Партнерский код', max_length=100, blank=True, null=True, unique=True)
+    used_partner_code = models.CharField('Партнерский код', max_length=100, blank=True, null=True, unique=True)
     balance = models.IntegerField('Баланс', default=0)
     orders_count = models.IntegerField('Размещено заказов', default=0)
     rent_count = models.IntegerField('Взято в аренду', default=0)
@@ -66,6 +67,7 @@ class User(AbstractUser):
     vip_expire = models.DateField('Дата завершения тарифа', blank=True, null=True)
     last_online = models.DateTimeField('Последний раз был онлайн', auto_now=True, null=True)
     is_vip = models.BooleanField('VIP?', default=False)
+    is_ref_code_entered = models.BooleanField('Код введен', default=False)
     is_online = models.BooleanField('Онлайн?', default=False)
     is_customer = models.BooleanField('Заказчик?', default=True)
     is_person = models.BooleanField('Частное лицо?', default=True)
@@ -125,11 +127,16 @@ class UserFeedback(models.Model):
     value = models.IntegerField('Оценка', blank=True, null=True)
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
 
-    def save(self, *args, **kwargs):
-        if self.value:
-            set_user_rating(self.user.id,self.value)
-        super(UserFeedback, self).save(*args, **kwargs)
 
+
+def user_feedback_post_save(sender, instance, created, **kwargs):
+    if created:
+        instance.user.rate_times += 1
+        instance.user.rate_value += instance.value
+        instance.user.rating = round(instance.user.rate_value / instance.user.rate_times)
+        instance.user.save(update_fields=['rate_times', 'rate_value', 'rating'])
+
+post_save.connect(user_feedback_post_save, sender=UserFeedback)
 
 class PaymentType(models.Model):
     icon = models.ImageField('Иконка', upload_to='payment/', blank=False, null=True)

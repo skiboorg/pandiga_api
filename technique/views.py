@@ -294,7 +294,7 @@ class TechniqueFilter(APIView):
         request_body = json.loads(request_unicode)
         # print(request_body)
         technique_type = request_body['technique_type']
-        print(technique_type)
+        #print(request_body)
         # первоначально отфильтрованные данные
         filtered_qs = []
         result_qs = []
@@ -346,16 +346,26 @@ class TechniqueFilter(APIView):
                 #     print('remove', item)
                 #     qs = qs.exclude(id=item.id)
                 #     print('filter Qs', qs)
-            # print(request_body)
+            print(request_body['filter_type'])
             if request_body['city']['id'] > 0:
-                temp_qs = qs.filter(type__name_slug=technique_type,
-                                    rent_price__gte=request_body['rent_price_from'],
-                                    rent_price__lte=request_body['rent_price_to'],
-                                    min_rent_time__gte=request_body['rent_time_from'],
-                                    min_rent_time__lte=request_body['rent_time_to'],
-                                    rent_type=request_body['rent_type'],
-                                    city_id=request_body['city']['id'],
-                                    is_active=True).order_by('-is_vip').order_by(order_type)
+                if request_body['filter_type'] == 'filter':
+                    temp_qs = qs.filter(type__name_slug=technique_type,
+                                        rent_price__gte=request_body['rent_price_from'],
+                                        rent_price__lte=request_body['rent_price_to'],
+                                        min_rent_time__gte=request_body['rent_time_from'],
+                                        min_rent_time__lte=request_body['rent_time_to'],
+                                        rent_type=request_body['rent_type'],
+                                        city_id=request_body['city']['id'],
+                                        is_active=True).order_by('-is_vip').order_by(order_type)
+                if request_body['filter_type'] == 'all':
+                    temp_qs = qs.filter(type__name_slug=technique_type,
+                                        # rent_price__gte=request_body['rent_price_from'],
+                                        # rent_price__lte=request_body['rent_price_to'],
+                                        # min_rent_time__gte=request_body['rent_time_from'],
+                                        # min_rent_time__lte=request_body['rent_time_to'],
+                                        # rent_type=request_body['rent_type'],
+                                        city_id=request_body['city']['id'],
+                                        is_active=True).order_by('-is_vip').order_by(order_type)
             else:
                 temp_qs = qs.filter(type__name_slug=technique_type,
                                     rent_price__gte=request_body['rent_price_from'],

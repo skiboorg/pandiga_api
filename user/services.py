@@ -16,11 +16,14 @@ def set_user_rating(id,value):
     from .models import User
 
     user = User.objects.get(id=id)
+    print(user)
+    print(user.rate_times)
     user.rate_times += 1
     user.rate_value += value
     user.rating = round(user.rate_value / user.rate_times)
-    user.save()
-    return
+    user.save(update_fields=['rate_times','rate_value','rating'])
+    print(user.rate_times)
+
 
 
 def send_sms(phone, text=None):

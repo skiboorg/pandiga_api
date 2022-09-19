@@ -26,7 +26,7 @@ Configuration.secret_key = settings.YA_KEY
 class UserAddFeedback(APIView):
     def post(self,request):
         data = request.data
-        print(data['data']['rate_value'])
+        #print(data)
         order = Order.objects.get(id=data['order'])
         UserFeedback.objects.create(user=order.owner,
                                     author=request.user,
@@ -153,7 +153,8 @@ class UserNewPayment(APIView):
             "receipt": {
                 "customer": {
                     "full_name": request.user.organization_name if request.user.organization_name else f'{request.user.first_name} {request.user.last_name}',
-                    "phone": str(request.user.phone).replace('+','').replace('(','').replace(')','').replace('-','')
+                    # "phone": str(request.user.phone).replace('+','').replace('(','').replace(')','').replace('-','')
+                    "email": request.user.email
                 },
                 "items": [
                     {
@@ -219,6 +220,11 @@ class NewPartner(APIView):
 
         if not refferal and user:
             Refferal.objects.create(master=user, refferal=request.user)
+            user.partner_balance += 1000
+            user.save(update_fields=['partner_balance'])
+            request.user.used_partner_code = request.data.get('code')
+            request.user.is_ref_code_entered = True
+            request.user.save(update_fields=['is_ref_code_entered','used_partner_code'])
 
             return Response({'status':True}, status=200)
         else:
