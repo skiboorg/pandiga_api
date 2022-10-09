@@ -220,11 +220,10 @@ class NewPartner(APIView):
 
         if not refferal and user:
             Refferal.objects.create(master=user, refferal=request.user)
-            user.partner_balance += 1000
-            user.save(update_fields=['partner_balance'])
+            request.user.balance += 1000
             request.user.used_partner_code = request.data.get('code')
             request.user.is_ref_code_entered = True
-            request.user.save(update_fields=['is_ref_code_entered','used_partner_code'])
+            request.user.save(update_fields=['is_ref_code_entered','used_partner_code','balance'])
 
             return Response({'status':True}, status=200)
         else:
@@ -233,6 +232,14 @@ class NewPartner(APIView):
 
 
 
+
+class GetSettings(generics.RetrieveAPIView):
+    serializer_class = SettingsSerializer
+
+    def get_object(self):
+        obj = Settings.objects.get(id=1)
+        print(obj)
+        return obj
 
 class GetAllPayments(generics.ListAPIView):
     serializer_class = PaymentsSerializer
@@ -305,7 +312,7 @@ class YooHook(APIView):
 
                 if all_refferals.exists():
                     for reffreal in all_refferals:
-                        reffreal.master.partner_balance += int(payment.amount * 10 / 100)
+                        reffreal.master.balance += int(payment.amount * 10 / 100)
                         reffreal.master.save()
                         reffreal.earned += int(payment.amount * 10 / 100)
                         reffreal.save()

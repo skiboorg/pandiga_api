@@ -173,7 +173,7 @@ class TechniqueUnit(models.Model):
     is_active = models.BooleanField('Учавстует в выдаче?', default=True)
     views = models.IntegerField('Просмотров', default=0)
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
-    promote_at = models.DateTimeField("Дата поднятия", auto_now_add=True, blank=True, null=True)
+    promote_at = models.DateTimeField("Дата поднятия",  blank=True, null=True)
 
     def save(self, *args, **kwargs):
         self.name_lower = self.name.lower()
@@ -224,6 +224,9 @@ class TechniqueUnitFeedback(models.Model):
     text = models.TextField('Тест', blank=True, null=True)
     value = models.IntegerField('Оценка', blank=True, null=True)
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
 
 
 def unit_feedback_post_save(sender, instance, created, **kwargs):

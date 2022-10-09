@@ -18,6 +18,7 @@ urlpatterns = [
     path('new_payment/', views.UserNewPayment.as_view()),
     path('all_payment_types/', views.GetAllPaymentsTypes.as_view()),
     path('all_payments', views.GetAllPayments.as_view()),
+    path('settings', views.GetSettings.as_view()),
     path('new_partner/', views.NewPartner.as_view()),
     path('get_refferals/', views.GetRefferals.as_view()),
     # path('get_refferals_money/', views.GetRefferalsMoney.as_view()),

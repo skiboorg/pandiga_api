@@ -18,6 +18,11 @@ class PaymentsTypeSerializer(serializers.ModelSerializer):
         model = PaymentType
         fields = '__all__'
 
+class SettingsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Settings
+        fields = '__all__'
+
 
 class PaymentsSerializer(serializers.ModelSerializer):
     type = PaymentsTypeSerializer(many=False)

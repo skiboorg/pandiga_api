@@ -88,6 +88,8 @@ class TechniqueUnitEdit(APIView):
         return Response(status=200)
 class TechniqueUnitAdd(APIView):
     def post(self,request):
+        from user.models import Settings
+        settings = Settings.objects.get(id=1)
         print(request.data)
         print(request.FILES)
         unit_data = json.loads(request.data['unit'])
@@ -124,6 +126,9 @@ class TechniqueUnitAdd(APIView):
             TechniqueUnitImage.objects.create(techniqueitem=unit,image=f)
         for f in request.FILES.getlist('docs_images'):
             TechniqueUnitImageDoc.objects.create(techniqueitem=unit,image=f)
+        if not settings.is_free:
+            request.user.balance -= unit.ad_price
+            request.user.save(update_fields=['balance'])
         return Response(status=201)
 
 
@@ -500,16 +505,24 @@ def test(request):
 
 class TechniquePromote(APIView):
     def post(self,request):
+        from user.models import Settings
+        import datetime as dt
+        settings_local = Settings.objects.get(id=1)
         unit_id = request.data.get('unit_id')
         is_vip = request.data.get('is_pin')
         unit = TechniqueUnit.objects.get(id=unit_id)
         result = False
-        if unit.owner.balance > settings.UNIT_PROMOTE_COST:
-            unit.promote_at = now()
+        vip_price = settings_local.vip_price
+        up_price = settings_local.up_price if settings_local.up_price > 0 else unit.ad_price
+
+        if is_vip:
             unit.is_vip = is_vip
-            unit.owner.balance -= settings.UNIT_PROMOTE_COST
+            up_price += vip_price
+        if unit.owner.balance >= up_price:
+            unit.promote_at = dt.datetime.now()
+            unit.owner.balance -= settings_local.up_price
             unit.save()
-            unit.owner.save()
+            unit.owner.save(update_fields=['balance'])
             result = True
         return Response({'result':result}, status=200)
 

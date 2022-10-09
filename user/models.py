@@ -127,6 +127,9 @@ class UserFeedback(models.Model):
     value = models.IntegerField('Оценка', blank=True, null=True)
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
 
+    class Meta:
+        ordering = ('-created_at',)
+
 
 
 def user_feedback_post_save(sender, instance, created, **kwargs):
@@ -173,6 +176,14 @@ class PaymentObj(models.Model):
         verbose_name_plural = "Платежи"
 
 
+
+class Settings(models.Model):
+    is_free = models.BooleanField("Hазмещение платное", default=False)
+    vip_price = models.IntegerField('Надбавки за ВИП услуги', default=0)
+    up_price = models.IntegerField('Цена поднятия, если не указано, будет использована цена объявления', default=0)
+
+    def __str__(self):
+        return f'Настройки'
 
 class Refferal(models.Model):
     """Начисления партеров"""
