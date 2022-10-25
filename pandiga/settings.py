@@ -29,8 +29,8 @@ ALLOWED_HOSTS = ['*']
 AUTH_USER_MODEL = 'user.User'
 
 
-EMAIL_HOST_USER = settings.EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = settings.EMAIL_HOST_PASSWORD
+EMAIL_HOST_USER = settings.SMTP_USER
+EMAIL_HOST_PASSWORD = settings.SMTP_PASSWORD
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_USE_SSL = True
@@ -61,6 +61,13 @@ INSTALLED_APPS = [
     'notification'
 ]
 ASGI_APPLICATION = "pandiga.asgi.application"
+
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/0'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_SERIALIZER = 'json'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 
 CHANNEL_LAYERS = {
     'default': {
