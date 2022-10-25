@@ -178,9 +178,10 @@ class PaymentObj(models.Model):
 
 
 class Settings(models.Model):
-    is_free = models.BooleanField("Hазмещение платное", default=False)
+    is_free = models.BooleanField("Размещение платное", default=False)
     vip_price = models.IntegerField('Надбавки за ВИП услуги', default=0)
     up_price = models.IntegerField('Цена поднятия, если не указано, будет использована цена объявления', default=0)
+    vip_time = models.IntegerField('Интервал ВИП услуг (поднять и закрепить) ХХ дней', default=30)
 
     def __str__(self):
         return f'Настройки'

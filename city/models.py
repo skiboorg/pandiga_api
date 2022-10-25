@@ -1,6 +1,7 @@
 from django.db import models
 
 class City(models.Model):
+    order_num = models.IntegerField('Номер ПП', default=1000)
     city = models.CharField('Город',
                             max_length=50,
                             blank=True,
@@ -30,5 +31,6 @@ class City(models.Model):
         return f'{self.city}'
 
     class Meta:
+        ordering = ('order_num','city',)
         verbose_name = "Город"
         verbose_name_plural = "Города и регионы"

@@ -11,3 +11,5 @@ daphne==3.0.2
 yandex_checkout
 pyfcm
 yookassa
+celery
+redis

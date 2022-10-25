@@ -21,4 +21,5 @@ urlpatterns = [
     path('search/<str:query>', views.TechniqueSearch.as_view()),
     path('promote', views.TechniquePromote.as_view()),
     path('pay', views.TechniquePay.as_view()),
+    path('test', views.TechniqueTest.as_view()),
 ]

@@ -526,6 +526,14 @@ class TechniquePromote(APIView):
             result = True
         return Response({'result':result}, status=200)
 
+class TechniqueTest(APIView):
+    def get(self,request):
+        from .tasks import check_technique
+        check_technique()
+
+
+        return Response(status=200)
+
 class TechniquePay(APIView):
     def post(self,request):
         unit_id = request.data.get('unit_id')
