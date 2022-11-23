@@ -70,7 +70,7 @@ class TechniqueUnitImageSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TechniqueUnitImage
-        fields = ['image','image_thumb',]
+        fields = '__all__'
         depth = 1
 
 

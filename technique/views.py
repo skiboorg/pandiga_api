@@ -121,9 +121,10 @@ class TechniqueUnitAdd(APIView):
                         if v['value'] == filter['value']:
                             unit.filter_value.add(v['id'])
                 unit.filter.add(filter['id'])
-
+        image_id = 0
         for f in request.FILES.getlist('images'):
-            TechniqueUnitImage.objects.create(techniqueitem=unit,image=f)
+            TechniqueUnitImage.objects.create(techniqueitem=unit,image=f, is_main= True if image_id == 0 else False)
+            image_id += 1
         for f in request.FILES.getlist('docs_images'):
             TechniqueUnitImageDoc.objects.create(techniqueitem=unit,image=f)
         if not settings.is_free:
@@ -297,7 +298,8 @@ class TechniqueFilter(APIView):
     def post(self,request):
         request_unicode = request.body.decode('utf-8')
         request_body = json.loads(request_unicode)
-        # print(request_body)
+        #print(request_body['rent_type'])
+
         technique_type = request_body['technique_type']
         #print(request_body)
         # первоначально отфильтрованные данные
@@ -388,7 +390,7 @@ class TechniqueFilter(APIView):
                 if not qs in result:
                     result.append(qs)
         # serializer = TechniqueUnitSerializer(result, many=True)
-        # print('result', result)
+        #print('result', result)
         if len(all_filters_values) == 0:
             if request_body['city']['id'] > 0:
                 result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
@@ -409,6 +411,9 @@ class TechniqueFilter(APIView):
                                                             city_id=request_body['city']['id'],
                                                             is_vip=False,
                                                           is_active=True).order_by('-is_vip', '-promote_at')
+                print('1')
+                print('result_vip',result_vip)
+                print('result_other',result_other)
             else:
                 result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
                                                           rent_price__gte=request_body['rent_price_from'],
@@ -427,9 +432,11 @@ class TechniqueFilter(APIView):
                                                             is_vip=False,
                                                             is_active=True).order_by('-promote_at')
 
-
-
+                print('2')
+                print('result_vip', result_vip)
+                print('result_other', result_other)
             result = list(chain(result_vip, result_other))
+
 
             # serializer = TechniqueUnitSerializer(result, many=True)
 
@@ -533,6 +540,49 @@ class TechniqueTest(APIView):
 
 
         return Response(status=200)
+
+
+class ImageAction(APIView):
+    def post(self,request):
+        data = request.data
+        unit_id = data.get('unit_id')
+        img_id = data.get('img_id')
+        action = json.loads(data.get('action'))
+        file = request.FILES.get('file')
+        result = {'success':False,'message':'Непонятная ошибка'}
+
+        if action == 'main':
+            img = TechniqueUnitImage.objects.get(is_main=True)
+            img.is_main = False
+            img.save()
+            img = TechniqueUnitImage.objects.get(id=img_id)
+            img.is_main = True
+            img.save()
+            result = {'success': True, 'message': 'Основное фото изменено'}
+
+        if action == 'add':
+            TechniqueUnitImage.objects.create(
+                techniqueitem_id=unit_id,
+                image=file
+            )
+            result = {'success': True, 'message': 'Фото добавлено'}
+
+        if action == 'delete':
+            images = TechniqueUnitImage.objects.filter(techniqueitem_id=unit_id)
+            if len(images) > 1:
+                img = TechniqueUnitImage.objects.get(id=img_id)
+                if img.is_main:
+                    first_non_main = images.filter(is_main=False).first()
+                    first_non_main.is_main = True
+                    first_non_main.save()
+                img.delete()
+                result = {'success': True, 'message': 'Фото удалено'}
+            else:
+                result = {'success': False, 'message': 'Фото не удалено, т.к. оно единственное'}
+
+
+
+        return Response(result, status=200)
 
 class TechniquePay(APIView):
     def post(self,request):

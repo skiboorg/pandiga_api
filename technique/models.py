@@ -157,7 +157,8 @@ class TechniqueUnit(models.Model):
     name_slug = models.CharField(max_length=255, blank=True, null=True, db_index=True, editable=False)
     min_rent_time = models.IntegerField('Минимальное время аренды', blank=False, null=True)
     #rent_type усли True почасовая, если False посуточная
-    rent_type = models.BooleanField('Тип аренды почасовая', default=True)
+    #rent_type усли None по км
+    rent_type = models.BooleanField('Тип аренды почасовая', blank=True, null=True)
     rent_price = models.IntegerField('Стоимость аренды', blank=False, null=True)
     description = models.TextField('Описание', blank=False, null=True)
     features = models.TextField('Характеристики', blank=False, null=True)
@@ -246,9 +247,13 @@ class TechniqueUnitImage(models.Model):
     image = models.ImageField('Изображение', upload_to='technique/items/', blank=False, null=True)
     image_thumb = models.ImageField('Изображение уменьшенное', upload_to='technique/items/', blank=True, null=True,editable=False)
     is_moderated = models.BooleanField('Изображение проверено?', default=True)
+    is_main = models.BooleanField(default=False)
 
     def image_tag(self):
         return mark_safe('<img src="{}" width="100" height="100" />'.format(self.image.url))
+
+    class Meta:
+        ordering = ('-is_main',)
 
     image_tag.short_description = 'Изображение'
 

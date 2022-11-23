@@ -60,11 +60,12 @@ class Message(models.Model):
     rentUnit = models.ForeignKey(TechniqueUnit, blank=True, null=True,
                                   on_delete=models.CASCADE, verbose_name='Техника для аренды в сообщении')
     # rentType усли True почасовая, если False посуточная
-    rentType = models.BooleanField(default=True)
+    rentType = models.BooleanField(blank=True, null=True)
     rentDate = models.DateField(blank=True,null=True)
     rentDays = models.IntegerField(blank=True,null=True)
     rentTime = models.TimeField(blank=True,null=True)
     rentHours = models.IntegerField(blank=True,null=True)
+    rentKm = models.IntegerField(blank=True,null=True)
 
     createdAt = models.DateTimeField(auto_now_add=True)
 

@@ -105,6 +105,7 @@ class ChatNewMessage(APIView):
                                    rentDays=request.data['rentDays'],
                                    rentTime=request.data['rentTime'],
                                    rentHours=request.data['rentHours'],
+                                   rentKm=request.data['rentKm'],
                                    message='Привет!')
 
         else:

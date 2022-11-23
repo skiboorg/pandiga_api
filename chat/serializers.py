@@ -69,6 +69,7 @@ class MessagesSerializer(serializers.ModelSerializer):
             'rentDate',
             'rentDays',
             'rentTime',
+            'rentKm',
             'rentHours',
             'createdAt',
             'chat']

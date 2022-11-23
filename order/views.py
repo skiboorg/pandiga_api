@@ -195,6 +195,7 @@ class OrderAdd(APIView):
                                              rentDays=rent_data['days'],
                                              rentTime=rent_data['time'],
                                              rentHours=rent_data['hours'],
+                                             rentKm=rent_data['km'],
                                              comment=order['description'])
 
             for filter in filters:
