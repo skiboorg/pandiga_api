@@ -301,7 +301,7 @@ class TechniqueFilter(APIView):
         #print(request_body['rent_type'])
 
         technique_type = request_body['technique_type']
-        #print(request_body)
+        print(request_body)
         # первоначально отфильтрованные данные
         filtered_qs = []
         result_qs = []
@@ -393,44 +393,80 @@ class TechniqueFilter(APIView):
         #print('result', result)
         if len(all_filters_values) == 0:
             if request_body['city']['id'] > 0:
-                result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
-                                                      rent_price__gte=request_body['rent_price_from'],
-                                                      rent_price__lte=request_body['rent_price_to'],
-                                                      min_rent_time__gte=request_body['rent_time_from'],
-                                                      min_rent_time__lte=request_body['rent_time_to'],
-                                                      rent_type=request_body['rent_type'],
-                                                          city_id=request_body['city']['id'],
-                                                          is_active=True,
-                                                      is_vip=True).order_by('-is_vip', '-promote_at')
-                result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                if request_body['filter_type'] == 'all':
+                    result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
                                                           rent_price__gte=request_body['rent_price_from'],
                                                           rent_price__lte=request_body['rent_price_to'],
                                                           min_rent_time__gte=request_body['rent_time_from'],
                                                           min_rent_time__lte=request_body['rent_time_to'],
-                                                          rent_type=request_body['rent_type'],
-                                                            city_id=request_body['city']['id'],
-                                                            is_vip=False,
-                                                          is_active=True).order_by('-is_vip', '-promote_at')
-                print('1')
-                print('result_vip',result_vip)
-                print('result_other',result_other)
-            else:
-                result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
-                                                          rent_price__gte=request_body['rent_price_from'],
-                                                          rent_price__lte=request_body['rent_price_to'],
-                                                          min_rent_time__gte=request_body['rent_time_from'],
-                                                          min_rent_time__lte=request_body['rent_time_to'],
-                                                          rent_type=request_body['rent_type'],
-                                                          is_active=True,
+                                                          # rent_type=request_body['rent_type'],
+                                                              city_id=request_body['city']['id'],
+                                                              is_active=True,
                                                           is_vip=True).order_by('-is_vip', '-promote_at')
-                result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
-                                                            rent_price__gte=request_body['rent_price_from'],
-                                                            rent_price__lte=request_body['rent_price_to'],
-                                                            min_rent_time__gte=request_body['rent_time_from'],
-                                                            min_rent_time__lte=request_body['rent_time_to'],
-                                                            rent_type=request_body['rent_type'],
-                                                            is_vip=False,
-                                                            is_active=True).order_by('-promote_at')
+                    result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                              rent_price__gte=request_body['rent_price_from'],
+                                                              rent_price__lte=request_body['rent_price_to'],
+                                                              min_rent_time__gte=request_body['rent_time_from'],
+                                                              min_rent_time__lte=request_body['rent_time_to'],
+                                                              # rent_type=request_body['rent_type'],
+                                                                city_id=request_body['city']['id'],
+                                                                is_vip=False,
+                                                              is_active=True).order_by('-is_vip', '-promote_at')
+                else:
+                    result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                              rent_price__gte=request_body['rent_price_from'],
+                                                              rent_price__lte=request_body['rent_price_to'],
+                                                              min_rent_time__gte=request_body['rent_time_from'],
+                                                              min_rent_time__lte=request_body['rent_time_to'],
+                                                              rent_type=request_body['rent_type'],
+                                                              city_id=request_body['city']['id'],
+                                                              is_active=True,
+                                                              is_vip=True).order_by('-is_vip', '-promote_at')
+                    result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                                rent_price__gte=request_body['rent_price_from'],
+                                                                rent_price__lte=request_body['rent_price_to'],
+                                                                min_rent_time__gte=request_body['rent_time_from'],
+                                                                min_rent_time__lte=request_body['rent_time_to'],
+                                                                rent_type=request_body['rent_type'],
+                                                                city_id=request_body['city']['id'],
+                                                                is_vip=False,
+                                                                is_active=True).order_by('-is_vip', '-promote_at')
+
+            else:
+                if request_body['filter_type'] == 'all':
+                    result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                              rent_price__gte=request_body['rent_price_from'],
+                                                              rent_price__lte=request_body['rent_price_to'],
+                                                              min_rent_time__gte=request_body['rent_time_from'],
+                                                              min_rent_time__lte=request_body['rent_time_to'],
+                                                              # rent_type=request_body['rent_type'],
+                                                              is_active=True,
+                                                              is_vip=True).order_by('-is_vip', '-promote_at')
+                    result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                                rent_price__gte=request_body['rent_price_from'],
+                                                                rent_price__lte=request_body['rent_price_to'],
+                                                                min_rent_time__gte=request_body['rent_time_from'],
+                                                                min_rent_time__lte=request_body['rent_time_to'],
+                                                                # rent_type=request_body['rent_type'],
+                                                                is_vip=False,
+                                                                is_active=True).order_by('-promote_at')
+                else:
+                    result_vip = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                              rent_price__gte=request_body['rent_price_from'],
+                                                              rent_price__lte=request_body['rent_price_to'],
+                                                              min_rent_time__gte=request_body['rent_time_from'],
+                                                              min_rent_time__lte=request_body['rent_time_to'],
+                                                              rent_type=request_body['rent_type'],
+                                                              is_active=True,
+                                                              is_vip=True).order_by('-is_vip', '-promote_at')
+                    result_other = TechniqueUnit.objects.filter(type__name_slug=technique_type,
+                                                                rent_price__gte=request_body['rent_price_from'],
+                                                                rent_price__lte=request_body['rent_price_to'],
+                                                                min_rent_time__gte=request_body['rent_time_from'],
+                                                                min_rent_time__lte=request_body['rent_time_to'],
+                                                                rent_type=request_body['rent_type'],
+                                                                is_vip=False,
+                                                                is_active=True).order_by('-promote_at')
 
                 print('2')
                 print('result_vip', result_vip)
