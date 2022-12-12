@@ -47,7 +47,15 @@ class TechniqueUnitDelete(APIView):
     def post(self, request):
         unit_id = request.data.get('unit_id')
         unit = TechniqueUnit.objects.get(id=unit_id)
+        type_id = unit.type.id
         unit.delete()
+        remain = TechniqueUnit.objects.filter(owner=request.user, type=type_id)
+        print('remain', len(remain))
+        if len(remain) == 0:
+            print('remove')
+            request.user.subscribe_type.remove(type_id)
+
+
         return Response(status=200)
 
 class TechniqueUnitEdit(APIView):
@@ -130,6 +138,7 @@ class TechniqueUnitAdd(APIView):
         if not settings.is_free:
             request.user.balance -= unit.ad_price
             request.user.save(update_fields=['balance'])
+        request.user.subscribe_type.add(type.id)
         return Response(status=201)
 
 
