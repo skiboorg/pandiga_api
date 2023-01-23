@@ -14,11 +14,7 @@ from rest_framework import generics
 from yookassa import Configuration, Payment
 from technique.serializers import TechniqueUnitSerializer
 import settings
-from django.core.mail import send_mail,EmailMessage
 
-
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
 
 Configuration.account_id = settings.YA_SHOP
 Configuration.secret_key = settings.YA_KEY

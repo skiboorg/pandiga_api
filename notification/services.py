@@ -22,7 +22,7 @@ def createNotification(type,user,text,url,chat_id=0):
                                                          'message':text,
                                                          'url':url,
                                                          'chat_id':chat_id})
-        msg_html = render_to_string('notification.html', {'message': text,
+        msg_html = render_to_string('notify.html', {'message': text,
                                                           'event': type})
         send_mail('Новое оповещение Pandiga ', None, 'info@pandiga.ru', [user.email],
                   fail_silently=False, html_message=msg_html)
