@@ -354,9 +354,11 @@ class LandingMail(APIView):
         from django.core.mail import send_mail
         from django.template.loader import render_to_string
 
-        print(request.data)
-        msg_html = render_to_string('test.html', {'name': request.data.get('name'),
-                                                  'phone': request.data.get('phone')}
+
+        name = json.loads(request.data.get('name'))
+        phone = json.loads(request.data.get('phone'))
+        msg_html = render_to_string('test.html', {'name': name,
+                                                  'phone': phone}
                                     )
         send_mail('Заполнена форма', None, 'info@pandiga.ru', ('delly55@mail.ru',),
                   fail_silently=False, html_message=msg_html)
