@@ -27,7 +27,7 @@ urlpatterns = [
     path('bonuses_to_money', views.BonusesToMoney.as_view()),
     path('send_link', views.SendLink.as_view()),
     path('yoo_hook', views.YooHook.as_view()),
-
+    path('mail/land', views.LandingMail.as_view()),
 
 
 ]
