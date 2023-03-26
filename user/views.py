@@ -360,6 +360,6 @@ class LandingMail(APIView):
         msg_html = render_to_string('test.html', {'name': name,
                                                   'phone': phone}
                                     )
-        send_mail('Заполнена форма', None, 'info@pandiga.ru', ('delly55@mail.ru',),
+        send_mail('Заполнена форма', None, 'info@pandiga.ru', ('stroymir63samara@mail.ru',),
                   fail_silently=False, html_message=msg_html)
         return Response(status=200)
